@@ -1,0 +1,97 @@
+//Defines stuff
+package org.usfirst.frc.team3694.robot;
+
+//import stuff here
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+//ROBOT CODE FROM THIS POINT ON
+public class Robot extends SampleRobot {
+	CameraServer server;
+	RobotDrive chassis;
+    Joystick driveStick;
+    Joystick shootStick;
+    Victor frontLeftDrive;
+    Victor frontRightDrive;
+    Victor rearLeftDrive;
+    Victor rearRightDrive;
+    Victor roller;
+    Victor rollerTilt;
+    SendableChooser chooser;
+
+//ROBOT INIZILIZATION
+    public void robotInit() {
+    	server = CameraServer.getInstance();
+    	server.setQuality(0);
+    	server.startAutomaticCapture("cam0");
+    	SendableChooser chooser = new SendableChooser();
+    	chassis = new RobotDrive(frontLeftDrive, frontRightDrive, rearLeftDrive, rearRightDrive);
+    	chassis.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
+    	chassis.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
+    	chassis.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
+    	chassis.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+    	chassis.setExpiration(0.1);
+    	driveStick = new Joystick(0);
+    	shootStick = new Joystick(1);
+    	chooser.initTable(NetworkTable.getTable("Defense Chooser"));
+    	chooser.addDefault("Low Bar", "lowbar");
+    	chooser.addObject("Portcullis" ,"portcullis"); 
+    	chooser.addObject("Cheval de Frise" ,"cheval");
+    	chooser.addObject("Moat" ,"moat");
+    	chooser.addObject("Ramparts" ,"ramparts");
+    	chooser.addObject("Drawbridge" ,"drawbridge");
+    	chooser.addObject("Sally Port" ,"sallyport");
+    	chooser.addObject("Rock Wall" ,"rockwall");
+    	chooser.addObject("Rough Terrain" ,"roughterrain");
+    	SmartDashboard.putData("Defense Chooser", chooser);
+    }
+
+//AUTONOMOUS
+    public void autonomous() {
+    		String defense = chooser.getSelected().toString();
+    		if(defense.equals("lowbar")){
+    			 chassis.setSafetyEnabled(false);
+    	         chassis.drive(0.5, 0.0);	// drive forwards half speed
+    	         Timer.delay(2.0);		//    for 2 seconds
+    	         chassis.drive(0.0, 0.0);	// stop robot	
+    		}else if(defense.equals("portcullis")){
+    			
+    		}else if(defense.equals("cheval")){
+    			
+    		}else if(defense.equals("moat")){
+    			
+    		}else if(defense.equals("ramparts")){
+    			
+    		}else if(defense.equals("drawbridge")){
+    			
+    		}else if(defense.equals("sallyport")){
+    			
+    		}else if(defense.equals("rockwall")){
+    			
+    		}else if(defense.equals("roughterrain")){
+    			
+    		}else{
+    			SmartDashboard.putString("Error", "No defenses match");
+    		}
+    		}
+    		
+//TELEOPERATED
+    public void operatorControl() {
+    	 chassis.setSafetyEnabled(true);
+        //while under in Teleoperation mode.
+        while (isOperatorControl() && isEnabled()) {
+            Timer.delay(0.005);
+            chassis.arcadeDrive(driveStick);
+            double shootY = shootStick.getAxis(Joystick.AxisType.kY);
+            rollerTilt.set(shootY);
+        }
+    }
+}
+//END BRACKET, ROBOT CODE ENDS
