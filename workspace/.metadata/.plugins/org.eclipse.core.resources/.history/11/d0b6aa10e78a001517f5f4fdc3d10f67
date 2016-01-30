@@ -1,0 +1,66 @@
+package com.mastersamurai.main;
+
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import com.mastersamurai.common.colorRef;
+
+public class commands extends colorRef implements CommandExecutor{
+		public boolean onCommand(CommandSender sender, Command cmd, String label,String[] args) {
+		Player pl = (Player) sender;
+		if(cmd.getName().equalsIgnoreCase("giveme")){
+			if(args.length == 0){
+			 pl.sendMessage(ac + "Usage: /giveme [item]");
+			
+		}else{
+			pl.sendMessage(args[0]);
+			if(args[0].equals("1")){
+				pl.getInventory().addItem(com.mastersamurai.vial.vialItem.vial(1));
+				
+			}
+			if(args[0].equals("2")){
+				pl.getInventory().addItem(com.mastersamurai.bloodvial.bloodVialItem.bloodVial(1));
+				
+			}
+			if(args[0].equals("3")){
+				pl.getInventory().addItem(com.mastersamurai.sacrificialdagger.sacrificialDaggerItem.sacrificialDagger(1));
+				
+			}
+			if(args[0].equals("4")){
+				pl.getInventory().addItem(com.mastersamurai.soulcrystal.soulCrystalItem.soulCrystal(1));
+				
+			}
+			if(args[0].equals("5")){
+				pl.getInventory().addItem(com.mastersamurai.soulshard.soulShardItem.soulShard(1));
+				
+			}
+			if(args[0].equals("6")){
+				pl.getInventory().addItem(com.mastersamurai.frostbite.frostBiteItem.frostBite(1));
+				
+			}
+			if(args[0].equals("7")){
+				pl.getInventory().addItem(com.mastersamurai.fireball.fireBallItem.fireBall(1));
+				
+			}
+			if(args[0].equals("8")){
+				pl.getInventory().addItem(com.mastersamurai.thunderhammer.thunderHammerItem.thunderHammer(1));
+				
+			}
+		}
+		}
+		return false;
+	}
+}
+              
+//ids:
+//1 = vial
+//2 = bloodvial
+//3 = sacrificial dagger
+//4 = soul crystal
+//5 = soul shard
+//6 = frostbite
+//7 = fire projecticle thingy
+//8 = mjolnir

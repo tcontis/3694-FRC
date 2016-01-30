@@ -1,0 +1,39 @@
+package com.samurai;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class pepper extends JavaPlugin{
+
+	public void giveItem(Player p) {
+		p.getInventory().addItem(getItem());
+	}
+	
+	private ItemStack getItem() {
+		ItemStack i = new ItemStack(Material.POTATO);
+		ItemMeta m = i.getItemMeta();
+		List<String> lore = new ArrayList<>();
+		
+		m.setDisplayName(ChatColor.DARK_PURPLE + "Fluffy Pepper");
+		lore.add(ChatColor.LIGHT_PURPLE + "A one of a kind, loving pepper.");
+		
+		m.setLore(lore);
+		i.setItemMeta(m);
+		return i;
+	}
+	
+	private boolean isItem(ItemStack i) {
+		ItemStack i1 = getItem();
+		return (i1.getType() == i.getType()
+				&& i1.hasItemMeta() == i.hasItemMeta() && i1.getItemMeta()
+				.getDisplayName().equals(i.getItemMeta().getDisplayName()));
+	}
+
+}

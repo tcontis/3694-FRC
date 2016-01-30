@@ -1,0 +1,30 @@
+package com.samurai.test;
+
+import java.util.Random;
+
+import net.minecraft.server.v1_8_R3.Block;
+
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class Main extends JavaPlugin implements Listener{
+
+	@EventHandler
+
+	public void onBlockBreak(BlockBreakEvent event){
+
+		Random rn = new Random();
+		ItemStack rstone = new ItemStack(Material.REDSTONE, rn.nextInt(4-1 + 1) + 1);
+		Block block = (Block) event.getBlock();
+
+        Material material = ((org.bukkit.block.Block) block).getType();
+        if(material == Material.GLOWSTONE){
+        	((org.bukkit.block.Block) block).getDrops().remove(Material.GLOWSTONE_DUST);
+        	((org.bukkit.block.Block) block).getDrops().add(rstone);
+        }
+}
+}

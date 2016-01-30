@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move element &apos;cooldowns.java&apos; to &apos;CustomItems/src/com.mastersamurai.salt.common&apos;&#x0D;&#x0A;- Original project: &apos;AdvancedAFK&apos;&#x0D;&#x0A;- Destination element: &apos;CustomItems/src/com.mastersamurai.salt.common&apos;&#x0D;&#x0A;- Original element: &apos;com.mastersamurai.advancedafk.common.cooldowns.java&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move compilation unit" destination="=CustomItems/src&lt;com.mastersamurai.salt.common" element1="/src&lt;com.mastersamurai.advancedafk.common{cooldowns.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" patterns="*" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1435510097729" units="1" version="1.0"/>
+</session>

@@ -1,0 +1,65 @@
+//Defines stuff
+package org.usfirst.frc.team3694.robot;
+
+//import stuff here
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+//ROBOT CODE FROM THIS POINT ON
+public class Robot extends SampleRobot {
+	RobotDrive chassis;
+    Joystick driveStick;
+    Joystick shootStick;
+    Victor leftDriveMotor = new Victor(0);
+    Victor rightDriveMotor = new Victor(1);
+    Victor skidMotor = new Victor(2);
+    Victor liftMotor = new Victor(3);
+
+//ROBOT INIZILIZATION 
+    public void robotInit() {
+    	  SendableChooser chooser = new SendableChooser();
+    	  chassis = new RobotDrive(leftDriveMotor, rightDriveMotor);
+          chassis.setExpiration(0.1);
+          driveStick = new Joystick(0);
+          shootStick = new Joystick(1);  
+         chooser.initTable(NetworkTable.getTable("Defense Chooser"));
+      	chooser.addDefault("Low Bar", "lowbar");
+      	chooser.addObject("Ramparts", "ramparts");
+      	chooser.addObject("Moat", "moat");
+      	chooser.addObject("Cheval de Frise", "cheval");
+      	chooser.addObject("Rock Wall", "rockwall");
+
+    	SmartDashboard.putData("Autonomous Defense Chooser", chooser);
+    }
+
+//AUTONOMOUS
+    public void autonomous() {
+            chassis.setSafetyEnabled(false);
+            chassis.drive(0.5, 0.0);	// drive forwards half speed
+            Timer.delay(2.0);		//    for 2 seconds
+            chassis.drive(0.0, 0.0);	// stop robot
+    }
+
+//TELEOPERATED
+    public void operatorControl() {
+    	 chassis.setSafetyEnabled(true);
+        //while under in Teleoperation mode. 
+        while (isOperatorControl() && isEnabled()) {
+            Timer.delay(0.005);
+            double driveX = driveStick.getAxis(Joystick.AxisType.kX);
+            double driveY = driveStick.getAxis(Joystick.AxisType.kY);
+            double driveTwist = driveStick.getAxis(Joystick.AxisType.kTwist);
+            double shootY = shootStick.getAxis(Joystick.AxisType.kY);
+            skidMotor.set(driveY);
+            liftMotor.set(shootY);
+            chassis.drive(driveX, driveTwist);
+        }              	
+    }
+}
+//END BRACKET, ROBOT CODE ENDS

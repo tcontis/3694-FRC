@@ -1,0 +1,5 @@
+name: RDrop
+version: 1.1
+description: Glowstone drops redstone.
+author: MasterSamurai
+main: com.samurai.test.Main

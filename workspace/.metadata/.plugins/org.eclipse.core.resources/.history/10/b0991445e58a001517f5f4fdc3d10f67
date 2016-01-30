@@ -1,0 +1,39 @@
+package com.mastersamurai.main;
+
+import java.util.logging.Logger;
+
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.mastersamurai.sacrificialdagger.events;
+
+
+public class main extends JavaPlugin implements Listener {
+	public final Logger logger = Logger.getLogger("Minecraft");
+	private static Plugin instance;
+	
+	public void onEnable(){
+		
+		instance = this;
+		PluginDescriptionFile pdfFile = this.getDescription();
+		getServer().getPluginManager().registerEvents(new events(), this);
+		getServer().getPluginManager().registerEvents(new com.mastersamurai.fireball.events(), this);
+		getServer().getPluginManager().registerEvents(new com.mastersamurai.frostbite.events(), this);
+		getServer().getPluginManager().registerEvents(new com.mastersamurai.thunderhammer.events(), this);
+		getCommand("giveme").setExecutor(new commands());
+		
+		this.logger.info(pdfFile.getName() + " has Been Enabled!");
+	}
+	public void onDisable() {
+		PluginDescriptionFile pdfFile = this.getDescription();
+		this.logger.info(pdfFile.getName() + " has Been Disabled!");
+    }
+
+	public static Plugin getInstance() {
+		return instance;
+	}
+	
+	
+}

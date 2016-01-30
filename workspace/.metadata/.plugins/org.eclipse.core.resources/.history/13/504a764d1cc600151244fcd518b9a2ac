@@ -1,0 +1,74 @@
+//Defines stuff
+package org.usfirst.frc.team3694.robot;
+
+//import stuff here
+import edu.wpi.first.wpilibj.*;
+
+//ROBOT CODE FROM THIS POINT ON
+public class Robot extends SampleRobot {
+	RobotDrive chassis;
+    Joystick driveStick;
+    Joystick shootStick;
+    Victor leftDriveMotor = new Victor(0);
+    Victor rightDriveMotor = new Victor(1);
+    Victor skidMotor = new Victor(2);
+    Victor liftMotor = new Victor(3);
+    double shootStickY;
+    double liftSpeed;
+    double driveStickX;
+    double skidSpeed;
+    double driveStickTwist;
+    double turnCurve;
+
+//ROBOT INIZILIZATION 
+    public void robotInit() {
+    	  chassis = new RobotDrive(leftDriveMotor, rightDriveMotor);
+          chassis.setExpiration(0.1);
+          //Invert drive motors that are backwards.
+          chassis.setInvertedMotor(RobotDrive.MotorType.kRearRight,true);
+          chassis.setInvertedMotor(RobotDrive.MotorType.kRearLeft,true);
+          chassis.setInvertedMotor(RobotDrive.MotorType.kFrontRight,true);
+          chassis.setInvertedMotor(RobotDrive.MotorType.kFrontLeft,true);
+          driveStick = new Joystick(0);
+          shootStick = new Joystick(1);
+          shootStickY = shootStick.getY();
+          driveStickX = driveStick.getX();
+          driveStickTwist = driveStick.getTwist();
+    }
+
+//AUTONOMOUS
+    public void autonomous() {
+            chassis.setSafetyEnabled(false);
+            chassis.drive(0.5, 0.0);	// drive forwards half speed
+            Timer.delay(2.0);		//    for 2 seconds
+            chassis.drive(0.0, 0.0);	// stop robot
+         }
+
+//TELEOPERATED
+    public void operatorControl() {
+    	 chassis.setSafetyEnabled(true);
+        //while under in Teleoperation mode. 
+        while (isOperatorControl() && isEnabled()) {
+            Timer.delay(0.005);		
+            //shoot stick y=speed for lift
+            liftSpeed = shootStickY/100;
+            liftMotor.set(liftSpeed);
+            System.console().printf("1");
+            //drive stick x=speed to skid
+            skidSpeed = driveStickX/100;
+            skidMotor.set(skidSpeed);
+            chassis.arcadeDrive(driveStick);
+            //drive stick y=speed to move forwards/backwards
+            turnCurve = driveStickTwist/100;
+            chassis.drive(turnCurve, turnCurve);
+            /*if(driveStickTwist >= 10){
+            	rightDriveMotor.set(0.5);
+            }else{
+            	if(driveStickTwist <= -10){
+            		leftDriveMotor.set(-0.5);
+            	}*/
+        }           
+        	
+        }
+}
+//END BRACKET, ROBOT CODE ENDS
