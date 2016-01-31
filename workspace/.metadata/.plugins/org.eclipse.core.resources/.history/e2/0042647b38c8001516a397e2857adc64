@@ -48,7 +48,7 @@ public class Robot extends SampleRobot {
         //while under in Teleoperation mode.
         while (isOperatorControl() && isEnabled()) {
             Timer.delay(0.005);
-            chassis.arcadeDrive(driveStick);
+            chassis.arcadeDrive(shootStick);
             double shootY = shootStick.getAxis(Joystick.AxisType.kY);
             liftMotor.set(shootY);
         }
