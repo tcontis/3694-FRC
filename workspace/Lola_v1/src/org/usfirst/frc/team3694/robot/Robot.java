@@ -2,6 +2,7 @@
 package org.usfirst.frc.team3694.robot;
 
 //import stuff here
+import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
 import edu.wpi.first.wpilibj.CameraServer;
@@ -13,7 +14,8 @@ import edu.wpi.first.wpilibj.Victor;
 
 //ROBOT CODE FROM THIS POINT ON
 public class Robot extends SampleRobot {
-	CameraServer server;
+    int session;
+    Image frame;
 	RobotDrive chassis;
     Joystick driveStick;
     Joystick shootStick;
@@ -24,9 +26,10 @@ public class Robot extends SampleRobot {
 
 //ROBOT INIZILIZATION
     public void robotInit() {
-    	server = CameraServer.getInstance();
-    	server.setQuality(0);
-    	server.startAutomaticCapture("cam0");
+    	frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+        session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+        NIVision.IMAQdxConfigureGrab(session);
+        CameraServer.getInstance().setImage(frame);
     	leftDriveMotor.setInverted(true);
     	rightDriveMotor.setInverted(true);
     	chassis = new RobotDrive(leftDriveMotor, rightDriveMotor);
