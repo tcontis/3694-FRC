@@ -18,12 +18,10 @@ public class Robot extends SampleRobot {
 	RobotDrive chassis;
     Joystick driveStick;
     Joystick shootStick;
-    Victor frontLeftDrive;
-    Victor frontRightDrive;
-    Victor rearLeftDrive;
-    Victor rearRightDrive;
-    Victor roller;
-    Victor rollerTilt;
+    Victor frontDrive = new Victor(0);
+    Victor rearDrive = new Victor(1);
+    Victor roller = new Victor(3);
+    Victor rollerTilt = new Victor(4);
     SendableChooser chooser;
 
 //ROBOT INIZILIZATION
@@ -32,11 +30,9 @@ public class Robot extends SampleRobot {
     	server.setQuality(0);
     	server.startAutomaticCapture("cam0");
     	SendableChooser chooser = new SendableChooser();
-    	chassis = new RobotDrive(frontLeftDrive, frontRightDrive, rearLeftDrive, rearRightDrive);
-    	chassis.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
-    	chassis.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
-    	chassis.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
-    	chassis.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+    	frontDrive.setInverted(true);
+    	rearDrive.setInverted(true);
+    	chassis = new RobotDrive(frontDrive, rearDrive);
     	chassis.setExpiration(0.1);
     	driveStick = new Joystick(0);
     	shootStick = new Joystick(1);

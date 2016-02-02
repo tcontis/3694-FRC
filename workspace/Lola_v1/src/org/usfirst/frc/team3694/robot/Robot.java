@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.Victor;
 //ROBOT CODE FROM THIS POINT ON
 public class Robot extends SampleRobot {
 	CameraServer server;
-	Image image;
 	RobotDrive chassis;
     Joystick driveStick;
     Joystick shootStick;
@@ -28,6 +27,8 @@ public class Robot extends SampleRobot {
     	server = CameraServer.getInstance();
     	server.setQuality(0);
     	server.startAutomaticCapture("cam0");
+    	leftDriveMotor.setInverted(true);
+    	rightDriveMotor.setInverted(true);
     	chassis = new RobotDrive(leftDriveMotor, rightDriveMotor);
     	chassis.setExpiration(0.1);
     	driveStick = new Joystick(0);
