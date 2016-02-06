@@ -2,26 +2,24 @@
 package org.usfirst.frc.team3694.robot;
 
 //Import stuff here
-import java.awt.event.KeyEvent;
-
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.USBCamera;
-//ROBOT CODE FROM THIS POINT ON
 
+//ROBOT CODE FROM THIS POINT ON
 public class Robot extends SampleRobot {
 	//Camera and Object-Tracking Objects and Variables
 	public static USBCamera camera0;
-	
+
 	//SmartDashboard Objects and Variables
-	public static int number;
-	public static KeyEvent event;
+	public static char c;
+	public static String selected = "Selected";
+	public static String blank = "";
 	
 	//Drive and Chassis Objects and Variables
 	public static RobotDrive chassis;
@@ -48,100 +46,65 @@ public class Robot extends SampleRobot {
     	//Configure motors present in Chassis, configure safety
     	chassis = new RobotDrive(frontDrive, rearDrive);
     	chassis.setExpiration(0.1);
-    }
-//Detect number input from Driver's Station
-    public void keyTyped(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 0;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_1) {
-            number = 1;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 2;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 3;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 4;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 5;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 6;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 7;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 8;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_0) {
-            number = 9;
-        }
-       
-    }
-  //WHEN DISABLED    
+    }   
+//WHEN DISABLED    
     public void disabled(){
-    	keyTyped(event);
         //Initialize SmartDashboard Autonomous Defense Chooser with Options
-    	if(number == 0){
-    		SmartDashboard.putString("Nothing (0)", "nothing");
+    	if(c == 0){
+    		SmartDashboard.putString("Nothing (0)", selected);
     	}else{
-    		SmartDashboard.putString("Nothing 0", "nothing");
+    		SmartDashboard.putString("Nothing (0)", blank);
     	}
-    	if(number == 1){
-        	SmartDashboard.putString("Lowbar (1)", "lowbar");
+    	if(c == 1){
+        	SmartDashboard.putString("Lowbar (1)", selected);
     	}else{
-        	SmartDashboard.putString("Lowbar 1", "lowbar");
+        	SmartDashboard.putString("Lowbar (1)", blank);
     	}
-    	if(number == 2){
-        	SmartDashboard.putString("Portcullis (2)" ,"portcullis");
+    	if(c == 2){
+        	SmartDashboard.putString("Portcullis (2)" ,selected);
     	}else{
-        	SmartDashboard.putString("Portcullis 2" ,"portcullis");
+        	SmartDashboard.putString("Portcullis (2)" ,blank);
     	}
-    	if(number == 3){
-        	SmartDashboard.putString("Cheval de Frise (3)" ,"cheval");
+    	if(c == 3){
+        	SmartDashboard.putString("Cheval de Frise (3)" ,selected);
     	}else{
-        	SmartDashboard.putString("Cheval de Frise 3" ,"cheval");
+        	SmartDashboard.putString("Cheval de Frise (3)" ,blank);
     	}
-    	if(number == 4){
-        	SmartDashboard.putString("Moat (4)","moat");
+    	if(c == 4){
+        	SmartDashboard.putString("Moat (4)",selected);
     	}else{
-        	SmartDashboard.putString("Moat 4","moat");
+        	SmartDashboard.putString("Moat (4)",blank);
     	}
-    	if(number == 5){
-        	SmartDashboard.putString("Ramparts (5)" ,"ramparts");
+    	if(c == 5){
+        	SmartDashboard.putString("Ramparts (5)" ,selected);
     	}else{
-        	SmartDashboard.putString("Ramparts 5" ,"ramparts");
+        	SmartDashboard.putString("Ramparts (5)" ,blank);
     	}
-    	if(number == 6){
-    		SmartDashboard.putString("Drawbridge (6)" ,"drawbridge");
+    	if(c == 6){
+    		SmartDashboard.putString("Drawbridge (6)" ,selected);
     	}else{
-    		SmartDashboard.putString("Drawbridge 6" ,"drawbridge");
+     		SmartDashboard.putString("Drawbridge (6)" ,blank);
     	}
-    	if(number == 7){
-    		SmartDashboard.putString("Sally Port (7)" ,"sallyport");
+    	if(c == 7){
+    		SmartDashboard.putString("Sally Port (7)" ,selected);
     	}else{
-    		SmartDashboard.putString("Sally Port 7" ,"sallyport");
+    		SmartDashboard.putString("Sally Port (7)" ,blank);
     	}
-    	if(number == 8){
-        	SmartDashboard.putString("Rock Wall (8)" ,"rockwall");
+    	if(c == 8){
+        	SmartDashboard.putString("Rock Wall (8)" ,selected);
     	}else{
-        	SmartDashboard.putString("Rock Wall 8" ,"rockwall");
+        	SmartDashboard.putString("Rock Wall (8)" ,blank);
     	}
-    	if(number == 9){
-        	SmartDashboard.putString("Rough Terrain (9)" ,"roughterrain");
+    	if(c == 9){
+        	SmartDashboard.putString("Rough Terrain (9)" ,selected);
     	}else{
-        	SmartDashboard.putString("Rough Terrain 9" ,"roughterrain");
+        	SmartDashboard.putString("Rough Terrain (9)" ,blank);
     	}
     }
 //AUTONOMOUS
     public void autonomous() { 	
     	//Start of loops to figure out which defense selected
-    	if(number == 1){
+    	if(c == 1){
     		//Lowbar autonomous
     		chassis.setSafetyEnabled(false);
     		
@@ -149,28 +112,27 @@ public class Robot extends SampleRobot {
     	    chassis.drive(0.5, 0.0);	
     	    Timer.delay(2.0);
     	    chassis.drive(0.0, 0.0);		
-    	}else if(number == 2){
+    	}else if(c == 2){
     		//Portcullis autonomous
-    	}else if(number == 3){
+    	}else if(c == 3){
     		//Cheval de Frise autonomous
-    	}else if(number == 4){
+    	}else if(c == 4){
     		//Moat autonomous
-    	}else if(number == 5){
+    	}else if(c == 5){
     		//Rampart autonomous
-    	}else if(number == 6){
+    	}else if(c == 6){
     		//Drawbridge autonomous
-    	}else if(number == 7){
+    	}else if(c == 7){
     		//Sallyport autonomous
-    	}else if(number == 8){
+    	}else if(c == 8){
     		//Rock Wall autonomous
-    	}else if(number == 9){
+    	}else if(c == 9){
     		//Rough Terrain autonomous
     	}else{
     		//If none of the above are the selected defense, then there is an error
     		SmartDashboard.putString("Error", "No defenses match");
-    	}
+    	}	
     }
-    		
 //TELEOPERATED
     public void operatorControl() {
     	//Enable Chassis Safety
