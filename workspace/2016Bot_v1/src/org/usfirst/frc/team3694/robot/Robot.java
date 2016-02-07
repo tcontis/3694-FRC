@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.vision.USBCamera;
 //ROBOT CODE FROM THIS POINT ON
 public class Robot extends SampleRobot {
 	//Camera and Object-Tracking Objects and Variables
-	public static USBCamera camera0;
+	public USBCamera camera0;
 
 	//SmartDashboard Objects and Variables
 	public static char c;
@@ -23,15 +23,15 @@ public class Robot extends SampleRobot {
 	
 	//Drive and Chassis Objects and Variables
 	public static RobotDrive chassis;
-	public static final Victor frontDrive = new Victor(0);
-	public static final Victor rearDrive = new Victor(1);
-	public static final Victor roller = new Victor(3);
-	public static final Victor rollerTilt = new Victor(4);
+	public final Victor frontDrive = new Victor(0);
+	public final Victor rearDrive = new Victor(1);
+	public final Victor roller = new Victor(3);
+	public final Victor rollerTilt = new Victor(4);
 	
 	//Joystick Objects and Variables
-	public static final Joystick driveStick = new Joystick(0);
-	public static final Joystick shootStick = new Joystick(1);
-	public static double shootY;
+	public final Joystick driveStick = new Joystick(0);
+	public final Joystick shootStick = new Joystick(1);
+	public double shootY;
 
 //ROBOT INIZILIZATION
     public void robotInit() {
