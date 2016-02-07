@@ -1,0 +1,13 @@
+package org.usfirst.frc.team3694.robot;
+
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class MyKeyListener extends KeyAdapter{
+	public void keyPressed(KeyEvent evt) {
+		if (evt.getKeyChar() == '1') {
+			System.out.println("1");
+			Robot.c = 1;
+	    }	
+	}	  
+}

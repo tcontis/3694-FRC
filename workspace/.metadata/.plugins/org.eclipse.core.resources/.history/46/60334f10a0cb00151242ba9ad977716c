@@ -1,0 +1,31 @@
+package org.test.tests;
+
+import java.util.Scanner;
+
+public class KeyboardInput {
+
+	public static void main(String[] args) {
+		Scanner variable = new Scanner(System.in);
+		System.out.println("What is your name?");
+		String name = variable.nextLine();
+		System.out.println("Hello " + name);
+
+		Boolean quit = false;
+		while (!quit) {
+			System.out.println("Please enter 1, 2, or 3. Any other value will end the program");
+			String result = variable.nextLine();
+			switch (result) {
+			case "1":
+				System.out.println("you entered 1");
+				break;
+			case "2":
+				System.out.println("you entered 2");
+				break;
+			case "3":
+				System.out.println("you entered 3");
+				break;
+			default:
+				System.out.println("you did not enter 1, 2, or 3...program will now end");
+				quit = true;
+			}
+		}

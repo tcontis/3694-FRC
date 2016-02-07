@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.mastersamurai.salt.common.colorRef"/>
-<fullyQualifiedTypeName name="com.mastersamurai.regionflag.itemRegionFlag"/>
 <fullyQualifiedTypeName name="org.bukkit.Effect"/>
 <fullyQualifiedTypeName name="com.mastersamurai.woatermelon.itemMelon"/>
 <fullyQualifiedTypeName name="com.mastersamurai.paidrankup.common.colorRef"/>
@@ -59,5 +57,7 @@
 <fullyQualifiedTypeName name="org.bukkit.World"/>
 <fullyQualifiedTypeName name="org.bukkit.Location"/>
 <fullyQualifiedTypeName name="com.ni.vision.NIVision.Image"/>
+<fullyQualifiedTypeName name="edu.wpi.first.wpilibj.Joystick.ButtonType"/>
 <fullyQualifiedTypeName name="edu.wpi.first.wpilibj.RobotDrive.MotorType"/>
+<fullyQualifiedTypeName name="java.awt.event.KeyEvent"/>
 </qualifiedTypeNameHistroy>

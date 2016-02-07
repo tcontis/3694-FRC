@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move element &apos;yoyo.java&apos; to &apos;Main/src/org.s.ss&apos;&#x0D;&#x0A;- Original project: &apos;aaweaw&apos;&#x0D;&#x0A;- Destination element: &apos;Main/src/org.s.ss&apos;&#x0D;&#x0A;- Original element: &apos;a.e.i.yoyo.java&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move compilation unit" destination="=Main/src&lt;org.s.ss" element1="/src&lt;a.e.i{yoyo.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" patterns="*" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1454772706967" units="1" version="1.0"/>
+</session>

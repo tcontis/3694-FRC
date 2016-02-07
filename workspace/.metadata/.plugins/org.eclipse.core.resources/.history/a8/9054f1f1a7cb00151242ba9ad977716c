@@ -1,0 +1,15 @@
+package org.test.tesss;
+
+import java.awt.event.KeyEvent;
+
+
+public class Main {
+	public void keyPressed(KeyEvent e) {
+	    System.out.println("Press");
+	    switch (e.getExtendedKeyCode()){
+	        case KeyEvent.VK_A :
+	            System.out.println("A");
+	            break;
+	    }
+	}
+}

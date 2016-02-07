@@ -1,0 +1,30 @@
+package org.MasterSamurai.Applications;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+@SuppressWarnings("serial")
+public class MainJFrame extends JFrame {
+	public static void main(String[] argv) throws Exception{
+		//Set visible
+		new  MainJFrame().setVisible(true);
+	}
+	
+	private MainJFrame(){
+		super("Autonomous Chooser");
+		setSize(500, 200);
+		
+		JTextField component = new JTextField();
+		JLabel label1 = new JLabel("Test");
+		component.addKeyListener(new MyKeyListener());
+		component.setSize(500, 50);
+		//Define and set up the JFrame
+		
+		JFrame f = new JFrame();
+		f.add(component);
+		f.add(label1);
+
+		f.setVisible(true);
+	}
+}

@@ -1,0 +1,33 @@
+package org.MasterSamurai.Applications;
+
+import java.awt.Dimension;
+import java.awt.Insets;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+@SuppressWarnings("serial")
+public class MainJFrame extends JFrame {
+	public static void main(String[] argv) throws Exception{
+		//Make a TextField, set up KeyListener
+		JTextField component = new JTextField();
+		JLabel label1 = new JLabel("Test");
+		component.addKeyListener(new MyKeyListener());
+		component.setSize(500, 50);
+		pane.add(label1);
+		Dimension size = label1.getPreferredSize();
+		Insets insets = pane.getInsets();
+		label1.setBounds(25 + insets.left, 5 + insets.top,
+	             size.width, size.height);
+
+		//Define and set up the JFrame
+		
+		JFrame f = new JFrame();
+	    f.setTitle("Autonomus Selection");
+		f.add(component);
+		f.add(label1);
+		f.setSize(500, 200);
+		f.setVisible(true);
+	}
+}

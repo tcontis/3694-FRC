@@ -1,8 +1,8 @@
 eclipse.preferences.version=1
-org.eclipse.jdt.core.classpathVariable.JRE_LIB=C\:/Program Files (x86)/Java/jre1.8.0_45/lib/rt.jar
+org.eclipse.jdt.core.classpathVariable.JRE_LIB=C\:/Program Files/Java/jre1.8.0_51/lib/rt.jar
 org.eclipse.jdt.core.classpathVariable.JRE_SRC=
 org.eclipse.jdt.core.classpathVariable.JRE_SRCROOT=
-org.eclipse.jdt.core.classpathVariable.JUNIT_HOME=C\:/Users/thoma_000/Downloads/eclipse-java-luna-SR2-win32/eclipse/plugins/org.junit_4.11.0.v201303080030/
+org.eclipse.jdt.core.classpathVariable.JUNIT_HOME=C\:/Users/thoma_000/.p2/pool/plugins/org.junit_4.12.0.v201504281640/
 org.eclipse.jdt.core.classpathVariable.M2_REPO=C\:/Users/thoma_000/.m2/repository
 org.eclipse.jdt.core.classpathVariable.networktables=C\:/Users/thoma_000/wpilib/java/current/lib/NetworkTables.jar
 org.eclipse.jdt.core.classpathVariable.networktables.sources=C\:/Users/thoma_000/wpilib/java/current/lib/NetworkTables-sources.jar
@@ -15,3 +15,4 @@ org.eclipse.jdt.core.compiler.compliance=1.8
 org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
 org.eclipse.jdt.core.compiler.problem.enumIdentifier=error
 org.eclipse.jdt.core.compiler.source=1.8
+org.eclipse.jdt.core.userLibrary.OpenCV-3.1.0=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<userlibrary systemlibrary\="false" version\="2">\r\n\t<archive path\="C\:/Users/thoma_000/Downloads/opencv/build/java/opencv-310.jar">\r\n\t\t<attributes>\r\n\t\t\t<attribute name\="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value\="C\:/Users/thoma_000/Downloads/opencv/build/java/x64"/>\r\n\t\t</attributes>\r\n\t</archive>\r\n</userlibrary>\r\n

@@ -1,0 +1,16 @@
+package org.test.tesss;
+
+public class qwrerweqr {
+	@Override
+	public void keyPressed(final KeyEvent e) {
+		switch (e.getKeyCode()) {
+			case KeyEvent.VK_ESCAPE: {
+				renderer.dispose();
+				device.setFullScreenWindow(null);
+				break;
+			}
+			default:
+				break;
+		}
+	}
+}
