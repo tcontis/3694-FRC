@@ -1,15 +1,17 @@
 //Defines stuff
 package org.usfirst.frc.team3694.robot;
 
-import edu.wpi.first.wpilibj.AnalogGyro;
-//Import stuff here
+import edu.wpi.first.wpilibj.ADXL362;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,8 +19,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //ROBOT CODE FROM THIS POINT ON
 public class Robot extends SampleRobot {
 	//SmartDashboard Objects and Variables
-	public static SendableChooser chooser;
-	public static String defense;
+	public static SendableChooser chooser2;
+	public static String point;
+	public static String cpoint = "";
+	public static String defense = "";
 	
 	//Drive and Chassis Objects and Variables
 	public static RobotDrive chassis;
@@ -33,75 +37,131 @@ public class Robot extends SampleRobot {
 	public static double shootY;
 	
 	//Analog Sensors
-	AnalogGyro gyro = new AnalogGyro(0);
-	Encoder encoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+	ADXL362 accel = new ADXL362(SPI.Port.kOnboardCS0, Accelerometer.Range.k16G);
+	ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS1);
+	
+	//DIO Sensors
+	Encoder leftEncoder = new Encoder(0, 1, true, Encoder.EncodingType.k4X);
+	Encoder rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
+	
+	//Values for Encoders
+	public static final double distPerRev = 4.05 * Math.PI;
+	public static final double distPerCount = distPerRev/360;
 
 //ROBOT INIZILIZATION
     public void robotInit() {
     	//Stream and Capture Image
     	CameraServer.getInstance().startAutomaticCapture("cam0");
-        
-        //Initialize SmartDashboard Autonomous Defense Chooser with Options
-        SendableChooser chooser = new SendableChooser();
-    	chooser.initTable(NetworkTable.getTable("Defense Chooser"));
-    	chooser.addDefault("Low Bar", "lowbar");
-    	chooser.addObject("Portcullis" ,"portcullis"); 
-    	chooser.addObject("Cheval de Frise" ,"cheval");
-    	chooser.addObject("Moat" ,"moat");
-    	chooser.addObject("Ramparts" ,"ramparts");
-    	chooser.addObject("Drawbridge" ,"drawbridge");
-    	chooser.addObject("Sally Port" ,"sallyport");
-    	chooser.addObject("Rock Wall" ,"rockwall");
-    	chooser.addObject("Rough Terrain" ,"roughterrain");
-    	SmartDashboard.putData("Defense Chooser", chooser);
     	
-    	//Invert Chassis Motors so that they roll in the right direction
-    	leftDrive.setInverted(true);
+    	//Table selection for desination
+        chooser2 = new SendableChooser();
+      	chooser2.initTable(NetworkTable.getTable("Destination Chooser"));
+      	chooser2.addDefault("Nothing", "nothing");
+      	chooser2.addObject("Point A" ,"a"); 
+      	chooser2.addObject("Point B" ,"b");
+      	chooser2.addObject("Point C" ,"c");
+      	chooser2.addObject("Point D" ,"d");
+      	chooser2.addObject("Point E" ,"e");
+      	SmartDashboard.putData("Destination Chooser", chooser2);
+      	
+      	//Current Point
+      	SmartDashboard.putString("Current Point", "");
+      	SmartDashboard.putString("Error","");
+    	
+      	//Invert Chassis Motors so that they roll in the right direction
+    	leftDrive.setInverted(true); 
     	rightDrive.setInverted(true);
     	
     	//Configure motors present in Chassis, configure safety
     	chassis = new RobotDrive(leftDrive, rightDrive);
     	chassis.setExpiration(0.1);
     }
-
-//AUTONOMOUS
-    public void autonomous() {
-    	//Reset Gyro
-    	gyro.reset();
-    	//Set a string to find out the defense chosen
-    	defense = chooser.getSelected().toString();
-    	
-    	//Start of loops to figure out which defense selected
-    	if(defense.equals("lowbar")){
-    		//Lowbar autonomous
-    		chassis.setSafetyEnabled(false);
-    		
-    		//Drive forward for two seconds at half speed, the stop
-    	    chassis.drive(0.5, 0.0);	
-    	    Timer.delay(2.0);
-    	    chassis.drive(0.0, 0.0);		
-    	}else if(defense.equals("portcullis")){
-    		//Portcullis autonomous
-    	}else if(defense.equals("cheval")){
-    		//Cheval de Frise autonomous
-    	}else if(defense.equals("moat")){
-    		//Moat autonomous
-    	}else if(defense.equals("ramparts")){
-    		//Rampart autonomous
-    	}else if(defense.equals("drawbridge")){
-    		//Drawbridge autonomous
-    	}else if(defense.equals("sallyport")){
-    		//Sallyport autonomous
-    	}else if(defense.equals("rockwall")){
-    		//Rock Wall autonomous
-    	}else if(defense.equals("roughterrain")){
-    		//Rough Terrain autonomous
-    	}else{
-    		//If none of the above are the selected defense, then there is an error
-    		SmartDashboard.putString("Error", "No defenses match");
+//ENCODER COUNTS
+    public void move(double dist, double speed){
+    	double cntsNeeded = dist/distPerCount;
+    	double rnddCountsNeeded = Math.round(cntsNeeded * 100.0)/100.0;
+    	leftEncoder.reset();
+    	rightEncoder.reset();
+    	chassis.drive(speed, 0.0);
+    	if(leftEncoder.get() > rnddCountsNeeded && rightEncoder.get() > rnddCountsNeeded){
+    		chassis.drive(0.0, 0.0);
+    		leftEncoder.reset();
+        	rightEncoder.reset();
     	}
     }
+//AUTONOMOUS
+    public void autonomous() {
+    	chassis.setSafetyEnabled(false);
+    	//Reset Gyro
+    	gyro.reset();
+    	leftEncoder.reset();
+    	rightEncoder.reset();
+    	//Set a string to find out the defense chosen
+    	move(10, 0.25);
+    	point = chooser2.getSelected().toString();
+    	cpoint = SmartDashboard.getString("Current Point");
     		
+    		if(point.equals(cpoint)){
+    			SmartDashboard.putString("Error", "Current Point matches Destination Point");
+    		}else{
+    			//if point is a
+    			if(point.equals("a")){
+    				if(cpoint.equals("b")){
+    					SmartDashboard.putString("Error", "None");
+    				}else if(cpoint.equals("c")){
+    			
+    				}else if(cpoint.equals("d")){
+    			
+    				}else if(cpoint.equals("e")){
+    			
+    				}
+    			//if point is b
+    			}else if(point.equals("b")){
+    				if(cpoint.equals("a")){
+    					
+    				}else if(cpoint.equals("c")){
+    			
+    				}else if(cpoint.equals("d")){
+    			
+    				}else if(cpoint.equals("e")){
+    			
+    				}
+    			//if point is c
+    			}else if(point.equals("c")){
+    				if(cpoint.equals("a")){
+    					
+    				}else if(cpoint.equals("b")){
+    					SmartDashboard.putString("Error", "None");
+    				}else if(cpoint.equals("d")){
+    			
+    				}else if(cpoint.equals("e")){
+    			
+    				}
+    			//if point is d
+    			}else if(point.equals("d")){
+    				if(cpoint.equals("a")){
+    					SmartDashboard.putString("Error", "Current Point matches Destination Point");
+    				}else if(cpoint.equals("b")){
+    					SmartDashboard.putString("Error", "None");
+    				}else if(cpoint.equals("c")){
+    			
+    				}else if(cpoint.equals("e")){
+    			
+    				}
+    			//if point is e
+    			}else if(point.equals("e")){
+    				if(cpoint.equals("a")){
+    					SmartDashboard.putString("Error", "Current Point matches Destination Point");
+    				}else if(cpoint.equals("b")){
+    					SmartDashboard.putString("Error", "None");
+    				}else if(cpoint.equals("c")){
+    			
+    				}else if(cpoint.equals("d")){
+    			
+    				}
+    			}
+    		}
+    } 		
 //TELEOPERATED
     public void operatorControl() {
     	//Enable Chassis Safety
