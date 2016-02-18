@@ -1,9 +1,22 @@
+/**
+ * Team 3694 NAHS Warbotz
+ * FRC 2016 Robot Code
+ * 
+ * Version 0.75
+ * 
+ * Changes: 
+ * -Limit switches added 
+ * -Autonomous code updated, 
+ * -Roller direction/stop controlled by Joystick buttons
+ */
+
 //Defines stuff
 package org.usfirst.frc.team3694.robot;
 
 import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -43,13 +56,16 @@ public class Robot extends SampleRobot {
 	//DIO Sensors
 	Encoder leftEncoder = new Encoder(0, 1, true, Encoder.EncodingType.k4X);
 	Encoder rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
+	DigitalInput rollerUpSwitch = new DigitalInput(7);
+	DigitalInput rollerDownSwitch = new DigitalInput(8);
+	DigitalInput rollerBallSwitch = new DigitalInput(9);
 	
 	//Values for Encoders
 	public static final double distPerRev = 4.05 * Math.PI;
 	public static final double distPerCount = distPerRev/360;
 
 //ROBOT INIZILIZATION
-    public void robotInit() {
+	public void robotInit() {
     	//Stream and Capture Image
     	CameraServer.getInstance().startAutomaticCapture("cam0");
     	
@@ -64,10 +80,12 @@ public class Robot extends SampleRobot {
       	chooser2.addObject("Point E" ,"e");
       	SmartDashboard.putData("Destination Chooser", chooser2);
       	
-      	//Current Point
+      	//Initialize SmartDashboard Fields
       	SmartDashboard.putString("Current Point", "");
       	SmartDashboard.putString("Error","");
-    	
+      	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+      	SmartDashboard.putNumber("Acceleration", accel.getX());
+      	
       	//Invert Chassis Motors so that they roll in the right direction
     	leftDrive.setInverted(true); 
     	rightDrive.setInverted(true);
@@ -97,7 +115,6 @@ public class Robot extends SampleRobot {
     	leftEncoder.reset();
     	rightEncoder.reset();
     	//Set a string to find out the defense chosen
-    	move(10, 0.25);
     	point = chooser2.getSelected().toString();
     	cpoint = SmartDashboard.getString("Current Point");
     		
@@ -107,57 +124,77 @@ public class Robot extends SampleRobot {
     			//if point is a
     			if(point.equals("a")){
     				if(cpoint.equals("b")){
-    					SmartDashboard.putString("Error", "None");
+    					chassis.drive(0.5, -90);
+    					move(45.5, 1);
     				}else if(cpoint.equals("c")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(91, 1);
     				}else if(cpoint.equals("d")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(136.5, 1);
     				}else if(cpoint.equals("e")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(182, 1);
     				}
     			//if point is b
     			}else if(point.equals("b")){
     				if(cpoint.equals("a")){
-    					
+    					chassis.drive(0.5, 90);
+    					move(45.5, 1);
     				}else if(cpoint.equals("c")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(45.5, 1);
     				}else if(cpoint.equals("d")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(91, 1);
     				}else if(cpoint.equals("e")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(136.5, 1);
     				}
     			//if point is c
     			}else if(point.equals("c")){
     				if(cpoint.equals("a")){
-    					
+    					chassis.drive(0.5, 90);
+    					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					SmartDashboard.putString("Error", "None");
+    					chassis.drive(0.5, 90);
+    					move(91, 1);
     				}else if(cpoint.equals("d")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(45.5, 1);
     				}else if(cpoint.equals("e")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(91, 1);
     				}
     			//if point is d
     			}else if(point.equals("d")){
     				if(cpoint.equals("a")){
-    					SmartDashboard.putString("Error", "Current Point matches Destination Point");
+    					chassis.drive(0.5, 90);
+    					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					SmartDashboard.putString("Error", "None");
+    					chassis.drive(0.5, 90);
+    					move(91, 1);
     				}else if(cpoint.equals("c")){
-    			
+    					chassis.drive(0.5, 90);
+    					move(136.5, 1);
     				}else if(cpoint.equals("e")){
-    			
+    					chassis.drive(0.5, -90);
+    					move(45.5, 1);
     				}
     			//if point is e
     			}else if(point.equals("e")){
     				if(cpoint.equals("a")){
-    					SmartDashboard.putString("Error", "Current Point matches Destination Point");
+    					chassis.drive(0.5, 90);
+    					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					SmartDashboard.putString("Error", "None");
+    					chassis.drive(0.5, 90);
+    					move(91, 1);
     				}else if(cpoint.equals("c")){
-    			
+    					chassis.drive(0.5, 90);
+    					move(136.5, 1);
     				}else if(cpoint.equals("d")){
-    			
+    					chassis.drive(0.5, 90);
+    					move(182, 1);
     				}
     			}
     		}
@@ -178,6 +215,24 @@ public class Robot extends SampleRobot {
             //Set the roller's tilt to be equal to the Shooting Joystick's Y
             shootY = shootStick.getAxis(Joystick.AxisType.kY);
             rollerTilt.set(shootY);
+            if(shootStick.getRawButton(2)){
+            	roller.set(-0.75);
+            }
+            if(shootStick.getRawButton(3)){
+            	roller.set(0);
+            }
+            if(shootStick.getRawButton(4)){
+            	roller.set(0.75);
+            }
+            while(rollerUpSwitch.get() == true){
+            	rollerTilt.set(-0.5);
+            }
+            while(rollerDownSwitch.get() == true){
+            	rollerTilt.set(0.5);
+            }
+            while(rollerBallSwitch.get() == true){
+            	roller.set(0);
+            }
         }
     }
 }
