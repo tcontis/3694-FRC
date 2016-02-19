@@ -2,35 +2,25 @@
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * 
- * Version 0.75
+ * Version 0.8
  * 
  * Changes: 
- * -Limit switches added 
- * -Autonomous code updated, 
- * -Roller direction/stop controlled by Joystick buttons
+ * -Switched to Iterative Robot
+ * -Autonomous code updated 
+ * -Fixed Accelerometer and Gyro Ports
  */
 
 //Defines stuff
 package org.usfirst.frc.team3694.robot;
 
-import edu.wpi.first.wpilibj.ADXL362;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.interfaces.Accelerometer;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//Imports
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.interfaces.*;
+import edu.wpi.first.wpilibj.networktables.*;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 
 //ROBOT CODE FROM THIS POINT ON
-public class Robot extends SampleRobot {
+public class Robot extends IterativeRobot {
 	//SmartDashboard Objects and Variables
 	public static SendableChooser chooser2;
 	public static String point;
@@ -47,11 +37,11 @@ public class Robot extends SampleRobot {
 	//Joystick Objects and Variables
 	public static Joystick driveStick = new Joystick(0);
 	public static Joystick shootStick = new Joystick(1);
-	public static double shootY;
+	public static double shootY = shootStick.getAxis(Joystick.AxisType.kY);
 	
 	//Analog Sensors
-	ADXL362 accel = new ADXL362(SPI.Port.kOnboardCS0, Accelerometer.Range.k16G);
-	ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS1);
+	ADXL362 accel = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k16G);
+	ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	
 	//DIO Sensors
 	Encoder leftEncoder = new Encoder(0, 1, true, Encoder.EncodingType.k4X);
@@ -83,8 +73,8 @@ public class Robot extends SampleRobot {
       	//Initialize SmartDashboard Fields
       	SmartDashboard.putString("Current Point", "");
       	SmartDashboard.putString("Error","");
-      	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-      	SmartDashboard.putNumber("Acceleration", accel.getX());
+      	SmartDashboard.putNumber("Gyro Angle", 0);
+      	SmartDashboard.putNumber("Acceleration", 0);
       	
       	//Invert Chassis Motors so that they roll in the right direction
     	leftDrive.setInverted(true); 
@@ -108,7 +98,8 @@ public class Robot extends SampleRobot {
     	}
     }
 //AUTONOMOUS
-    public void autonomous() {
+    public void autonomousInit() {
+    	Timer.delay(0.005);
     	chassis.setSafetyEnabled(false);
     	//Reset Gyro
     	gyro.reset();
@@ -124,96 +115,145 @@ public class Robot extends SampleRobot {
     			//if point is a
     			if(point.equals("a")){
     				if(cpoint.equals("b")){
+    					while(gyro.getAngle() < 270){
     					chassis.drive(0.5, -90);
+    					}
     					move(45.5, 1);
     				}else if(cpoint.equals("c")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(91, 1);
     				}else if(cpoint.equals("d")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(136.5, 1);
     				}else if(cpoint.equals("e")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(182, 1);
     				}
     			//if point is b
     			}else if(point.equals("b")){
     				if(cpoint.equals("a")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(45.5, 1);
     				}else if(cpoint.equals("c")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(45.5, 1);
     				}else if(cpoint.equals("d")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(91, 1);
     				}else if(cpoint.equals("e")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(136.5, 1);
     				}
     			//if point is c
     			}else if(point.equals("c")){
     				if(cpoint.equals("a")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(91, 1);
     				}else if(cpoint.equals("d")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(45.5, 1);
     				}else if(cpoint.equals("e")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(91, 1);
     				}
     			//if point is d
     			}else if(point.equals("d")){
     				if(cpoint.equals("a")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(91, 1);
     				}else if(cpoint.equals("c")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(136.5, 1);
     				}else if(cpoint.equals("e")){
-    					chassis.drive(0.5, -90);
+    					while(gyro.getAngle() < 270){
+        					chassis.drive(0.5, -90);
+        					}
     					move(45.5, 1);
     				}
     			//if point is e
     			}else if(point.equals("e")){
     				if(cpoint.equals("a")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(91, 1);
     				}else if(cpoint.equals("c")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(136.5, 1);
     				}else if(cpoint.equals("d")){
-    					chassis.drive(0.5, 90);
+    					while(gyro.getAngle() < 90){
+        					chassis.drive(0.5, -90);
+        					}
     					move(182, 1);
     				}
     			}
     		}
-    } 		
+    }
+    public void autonomousPeriodic(){
+    	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+      	SmartDashboard.putNumber("Acceleration", accel.getX());
+    }
 //TELEOPERATED
-    public void operatorControl() {
+    public void teleopInit() {
     	//Enable Chassis Safety
     	chassis.setSafetyEnabled(true);
-        
+    	gyro.reset();
+    	leftEncoder.reset();
+    	rightEncoder.reset();
+    }    
     	//While in Teleoperated mode.
-        while (isOperatorControl() && isEnabled()) {
+    public void teleopPeriodic(){
             //Slight delay required
         	Timer.delay(0.005);
-            
+        	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+          	SmartDashboard.putNumber("Acceleration", accel.getX());
+        	
         	//Drive chassis using Arcade Drive (One Joystick)
             chassis.arcadeDrive(driveStick);
             
             //Set the roller's tilt to be equal to the Shooting Joystick's Y
-            shootY = shootStick.getAxis(Joystick.AxisType.kY);
+  
             rollerTilt.set(shootY);
             if(shootStick.getRawButton(2)){
             	roller.set(-0.75);
@@ -233,7 +273,6 @@ public class Robot extends SampleRobot {
             while(rollerBallSwitch.get() == true){
             	roller.set(0);
             }
-        }
     }
 }
 //END BRACKET, ROBOT CODE ENDS
