@@ -2,12 +2,12 @@
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * 
- * Version 0.8
+ * Version 0.8.2
  * 
  * Changes: 
- * -Switched to Iterative Robot
- * -Autonomous code updated 
- * -Fixed Accelerometer and Gyro Ports
+ * -Fixed Values not Updating in SmartDashboard 
+ * -Autonomous code fixed
+ * -Implemented PID
  */
 
 //Defines stuff
@@ -43,6 +43,7 @@ public class Robot extends IterativeRobot {
 	ADXL362 accel = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k16G);
 	ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	
+	
 	//DIO Sensors
 	Encoder leftEncoder = new Encoder(0, 1, true, Encoder.EncodingType.k4X);
 	Encoder rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
@@ -58,7 +59,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
     	//Stream and Capture Image
     	CameraServer.getInstance().startAutomaticCapture("cam0");
-    	
+    		
     	//Table selection for desination
         chooser2 = new SendableChooser();
       	chooser2.initTable(NetworkTable.getTable("Destination Chooser"));
@@ -115,22 +116,22 @@ public class Robot extends IterativeRobot {
     			//if point is a
     			if(point.equals("a")){
     				if(cpoint.equals("b")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
     					chassis.drive(0.5, -90);
     					}
     					move(45.5, 1);
     				}else if(cpoint.equals("c")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(91, 1);
     				}else if(cpoint.equals("d")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(136.5, 1);
     				}else if(cpoint.equals("e")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(182, 1);
@@ -138,22 +139,22 @@ public class Robot extends IterativeRobot {
     			//if point is b
     			}else if(point.equals("b")){
     				if(cpoint.equals("a")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(45.5, 1);
     				}else if(cpoint.equals("c")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(45.5, 1);
     				}else if(cpoint.equals("d")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(91, 1);
     				}else if(cpoint.equals("e")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(136.5, 1);
@@ -161,22 +162,22 @@ public class Robot extends IterativeRobot {
     			//if point is c
     			}else if(point.equals("c")){
     				if(cpoint.equals("a")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(91, 1);
     				}else if(cpoint.equals("d")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(45.5, 1);
     				}else if(cpoint.equals("e")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(91, 1);
@@ -184,22 +185,22 @@ public class Robot extends IterativeRobot {
     			//if point is d
     			}else if(point.equals("d")){
     				if(cpoint.equals("a")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(91, 1);
     				}else if(cpoint.equals("c")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(136.5, 1);
     				}else if(cpoint.equals("e")){
-    					while(gyro.getAngle() < 270){
+    					if(gyro.getAngle() == 270){
         					chassis.drive(0.5, -90);
         					}
     					move(45.5, 1);
@@ -207,22 +208,22 @@ public class Robot extends IterativeRobot {
     			//if point is e
     			}else if(point.equals("e")){
     				if(cpoint.equals("a")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(45.5, 1);
     				}else if(cpoint.equals("b")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(91, 1);
     				}else if(cpoint.equals("c")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(136.5, 1);
     				}else if(cpoint.equals("d")){
-    					while(gyro.getAngle() < 90){
+    					if(gyro.getAngle() == 90){
         					chassis.drive(0.5, -90);
         					}
     					move(182, 1);
@@ -247,7 +248,7 @@ public class Robot extends IterativeRobot {
             //Slight delay required
         	Timer.delay(0.005);
         	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-          	SmartDashboard.putNumber("Acceleration", accel.getX());
+          	SmartDashboard.putNumber("Acceleration", accel.getY());
         	
         	//Drive chassis using Arcade Drive (One Joystick)
             chassis.arcadeDrive(driveStick);
@@ -255,6 +256,9 @@ public class Robot extends IterativeRobot {
             //Set the roller's tilt to be equal to the Shooting Joystick's Y
   
             rollerTilt.set(shootY);
+            if(shootY > rollerTilt.get()){
+            	rollerTilt.set(rollerTilt.get() + 0.1);
+            }
             if(shootStick.getRawButton(2)){
             	roller.set(-0.75);
             }
@@ -264,13 +268,16 @@ public class Robot extends IterativeRobot {
             if(shootStick.getRawButton(4)){
             	roller.set(0.75);
             }
-            while(rollerUpSwitch.get() == true){
+            if(driveStick.getRawButton(2)){
+            	gyro.reset();
+            }
+            while(rollerUpSwitch.get() == false){
             	rollerTilt.set(-0.5);
             }
-            while(rollerDownSwitch.get() == true){
+            while(rollerDownSwitch.get() == false){
             	rollerTilt.set(0.5);
             }
-            while(rollerBallSwitch.get() == true){
+            while(rollerBallSwitch.get() == false){
             	roller.set(0);
             }
     }
