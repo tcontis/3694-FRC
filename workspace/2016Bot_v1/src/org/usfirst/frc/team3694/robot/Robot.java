@@ -2,23 +2,19 @@
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * 
- * Version 0.8.7
+ * Version 0.9.0
  * 
  * Changes: 
- * -Rounded Gyro values to be less distracting
- * -Added more values to SmartDashboard
- *  > Select RoboRio camera to stream or not
- *  > See Roller Direction
- *  > See Choices you make above table
- * -Reformatted Autonomous (simplified for efficiency)
+ * -Fixed SmartDashboard error
+ * -Directions correct
+ * -Cleaned up unused values
+ * -Corrected Autonomous
  */
 
 //Defines stuff
 package org.usfirst.frc.team3694.robot;
 
 //Imports
-import java.text.DecimalFormat;
-
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.interfaces.*;
 import edu.wpi.first.wpilibj.networktables.*;
@@ -55,12 +51,11 @@ public class Robot extends IterativeRobot {
 	//Analog Sensors
 	public static ADXL362 accel = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k16G);
 	public static ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-	public static DecimalFormat df = new DecimalFormat("#.#");
-	public static double gyroAng = Integer.parseInt(df.format(gyro.getAngle()));
 
 	//DIO Sensors
 	Encoder leftEncoder = new Encoder(0, 1, true, Encoder.EncodingType.k4X);
 	Encoder rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
+	Encoder rollerEncoder = new Encoder(5, 6, false, Encoder.EncodingType.k4X);
 	DigitalInput rollerUpSwitch = new DigitalInput(7);
 	DigitalInput rollerDownSwitch = new DigitalInput(8);
 	DigitalInput rollerBallSwitch = new DigitalInput(9);
@@ -71,9 +66,6 @@ public class Robot extends IterativeRobot {
 
 //ROBOT INIZILIZATION
 	public void robotInit() {
-    	//Stream and Capture Image
-    	CameraServer.getInstance().startAutomaticCapture("cam0");
-    		
     	//Table selection for desination
     	chooser = new SendableChooser();
       	chooser.initTable(NetworkTable.getTable("Destination Chooser"));
@@ -95,10 +87,10 @@ public class Robot extends IterativeRobot {
       	chooser2.addObject("Point E" , 5);
       	SmartDashboard.putData("Current Point", chooser2);
       	
-      	chooser2 = new SendableChooser();
-      	chooser2.initTable(NetworkTable.getTable("RoboRio Camera"));
-      	chooser2.addDefault("Enable", 0);
-      	chooser2.addObject("Disable", 1); 
+      	chooser3 = new SendableChooser();
+      	chooser3.initTable(NetworkTable.getTable("RoboRio Camera"));
+      	chooser3.addDefault("Enable", 0);
+      	chooser3.addObject("Disable", 1); 
       	SmartDashboard.putData("RoboRio Camera", chooser3);
       	
       	//Initialize SmartDashboard Fields
@@ -107,15 +99,12 @@ public class Robot extends IterativeRobot {
       	SmartDashboard.putString("Roborio Camera Status:", chooser3.getSelected().toString());
       	SmartDashboard.putString("Error","");
       	SmartDashboard.putNumber("Gyro Angle", 0);
+      	SmartDashboard.putNumber("Gyro Angle", 0);
       	SmartDashboard.putNumber("Gyro Rate", 0);
       	SmartDashboard.putNumber("Acceleration X-Axis", 0);
       	SmartDashboard.putNumber("Acceleration Y-Axis", 0);
       	SmartDashboard.putNumber("Acceleration Z-Axis", 0);
       	SmartDashboard.putString("Roller Direction", "---");
-      	
-      	//Invert Chassis Motors so that they roll in the right direction
-    	leftDrive.setInverted(true); 
-    	rightDrive.setInverted(true);
     	
     	//Configure motors present in Chassis, configure safety
     	chassis = new RobotDrive(leftDrive, rightDrive);
@@ -163,32 +152,41 @@ public class Robot extends IterativeRobot {
     				SmartDashboard.putString("Error", "You chose 'Nothing' as one of the points");
     			}else{
     			rawDist = point - cpoint;
-    			dist = rawDist * 45.5;
+    			dist = Math.abs(rawDist * 45.5);
+    			move(6, 0.5);
     			if(rawDist > 0){
     				left = false;
+    				while(gyro.getAngle() > -90){
+    					chassis.drive(0.5, 0.5);
+    				}
     				
     			}else{
     				left = true;
-    				while(gyroAng < 90){
+    				while(gyro.getAngle() < 90){
     					chassis.drive(0.5, 0.5);
     				}
     			}
     			
     			move(dist, 0.75);
     			if(left == false){
-    				while(gyroAng < 90){
+    				while(gyro.getAngle() < 90){
     					chassis.drive(0.5, 0.5);
     				}
+    				
     			}else{
-    				while(gyroAng > -90){
+    				while(gyro.getAngle() > -90){
     					chassis.drive(0.5, -0.5);
     				}
+    				
     			}
+    			move(156, 0.5);
+    		
     			}
     		}
     }
     public void autonomousPeriodic(){
-    	SmartDashboard.putNumber("Gyro Angle", gyroAng);
+    	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+    	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
     	SmartDashboard.putNumber("Gyro Rate", gyro.getRate());
     	SmartDashboard.putNumber("Acceleration X-Axis", accel.getX());
       	SmartDashboard.putNumber("Acceleration Y-Axis", accel.getY());
@@ -206,17 +204,19 @@ public class Robot extends IterativeRobot {
             //Slight delay required
         	Timer.delay(0.005);
         	
-        	SmartDashboard.putNumber("Gyro Angle", gyroAng);
+        	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+        	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
         	SmartDashboard.putNumber("Gyro Rate", gyro.getRate());
         	SmartDashboard.putNumber("Acceleration X-Axis", accel.getX());
           	SmartDashboard.putNumber("Acceleration Y-Axis", accel.getY());
           	SmartDashboard.putNumber("Acceleration Z-Axis", accel.getZ());
+          	SmartDashboard.putNumber("Encoder (r)", rightEncoder.getRaw());
         	
         	//Drive chassis using Arcade Drive (One Joystick)
             chassis.arcadeDrive(driveStick);
             
             //Set the roller's tilt to be equal to the Shooting Joystick's Y
-            rollerTilt.set(shootY);
+            rollerTilt.set(-shootY);
             if(shootY > rollerTilt.get()){
             	rollerTilt.set(rollerTilt.get() + 0.1);
             }
