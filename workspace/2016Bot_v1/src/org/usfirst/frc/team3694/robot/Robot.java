@@ -2,15 +2,13 @@
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * 
- * Version 1.0.0
+ * Version 1.0.1
  * 
  * Changes: 
- * -Cleaned Up Code (Despaghettified)
- * -Made code shorter and more efficient
- * -Reformatted Autonomous
- * -Fixes and Tweaks to Code
- * -Roller encoder added
- * -Changed project name
+ * -Fixed bugs with code
+ * -Removed unneeded components
+ * -Reverted createTable function
+ * -Removed PID function *At least temporarily*
 \***************************************************/
 
 //Defines stuff
@@ -57,15 +55,32 @@ public class Robot extends IterativeRobot {
 	public static Encoder rollerEncoder = new Encoder(5, 6, false, Encoder.EncodingType.k4X); //Roller Motor Encoder----------DIO (5,6)
 	public static DigitalInput rollerUpSwitch = new DigitalInput(7); //Roller Upper Limit Switch------------------------------DIO (7)
 	public static DigitalInput rollerDownSwitch = new DigitalInput(8); //Roller Lower Limit Switch----------------------------DIO (8)
-	public static DigitalInput rollerBallSwitch = new DigitalInput(9); //Roller Ball Detection Limit Switch-------------------DIO (9)
 	public static final double distPerRev = 4.05 * Math.PI; //Distance per revolution
 	public static final double distPerCount = distPerRev/249; //Distance per encoder count
 
 //ROBOT INIZILIZATION (RUNS ONCE)
 	public void robotInit() {
-    	//Table Creation
-    	createTable(chooser, "Destination Chooser"); //destination point table
-    	createTable(chooser2, "Current Point Chooser"); //current point table
+    	//Table Creation for Destination Point
+		chooser = new SendableChooser();
+		chooser.initTable(NetworkTable.getTable("Destination Point"));
+      	chooser.addDefault("Nothing", 0);
+      	chooser.addObject("Point A" , 1); 
+      	chooser.addObject("Point B" , 2);
+      	chooser.addObject("Point C" , 3);
+      	chooser.addObject("Point D" , 4);
+      	chooser.addObject("Point E" , 5);
+      	SmartDashboard.putData("Destination Point", chooser);
+    	
+      	//Table Creation for Current Point
+		chooser2 = new SendableChooser();
+		chooser2.initTable(NetworkTable.getTable("Current Point"));
+      	chooser2.addDefault("Nothing", 0);
+      	chooser2.addObject("Point A" , 1); 
+      	chooser2.addObject("Point B" , 2);
+      	chooser2.addObject("Point C" , 3);
+      	chooser2.addObject("Point D" , 4);
+      	chooser2.addObject("Point E" , 5);
+      	SmartDashboard.putData("Current Point", chooser2);
       	
         //Table selection for Camera Status
       	chooser3 = new SendableChooser();
@@ -88,18 +103,6 @@ public class Robot extends IterativeRobot {
     	gyro.calibrate();
     	chassis.setExpiration(0.1);
     }
-//CREATES A TABLE WITH CHOOSER
-	public void createTable(SendableChooser a, String b){
-		a = new SendableChooser();
-      	a.initTable(NetworkTable.getTable(b));
-      	a.addDefault("Nothing", 0);
-      	a.addObject("Point A" , 1); 
-      	a.addObject("Point B" , 2);
-      	a.addObject("Point C" , 3);
-      	a.addObject("Point D" , 4);
-      	a.addObject("Point E" , 5);
-      	SmartDashboard.putData(b, a);
-	}
 //RESET ENCODERS
 	public void resetEncoders(){
 		leftEncoder.reset(); //Reset left encoder
@@ -126,6 +129,13 @@ public class Robot extends IterativeRobot {
     		chassis.drive(0.0, 0.0);
     		resetEncoders(); //reset encoders
     	}
+    }
+//CREATE ROLLER BUTTON
+    public void rollerButton(int a, String b, double c){
+    	if(shootStick.getRawButton(a)){
+        	SmartDashboard.putString("Roller Direction", b);
+        	roller.set(c);
+        }
     }
 //AUTONOMOUS INITIATION (RUNS ONCE)
     public void autonomousInit() {
@@ -181,46 +191,28 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
     	chassis.setSafetyEnabled(true); //Enable Safety
     	resetEncoders(); //reset encoders
-    }    
+    }
 //TELEOPERATED PERIODIC (CALLED EVERY FIELD CYCLE)
     public void teleopPeriodic(){
         	Timer.delay(0.005); //Slight delay required
         	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), rollerEncoder.get()); //Update SmartDashboard Values
             chassis.arcadeDrive(driveStick);//Drive chassis using Arcade Drive (One Joystick)
-            rollerTilt.set(shootY);//Set the roller's tilt to be equal to the Shooting Joystick's Y
+            rollerTilt.set(shootY); //Set the roller's tilt to be equal to the Shooting Joystick's Y
             
-            //Rough PID Implementation
-            if((shootY - rollerTilt.get()) >= 0.1){
-            	rollerTilt.set(rollerTilt.get() + 0.1);
-            }
-            //When Button 4 on shootStick pressed, Roll Roller Backwards
-            if(shootStick.getRawButton(4)){
-            	SmartDashboard.putString("Roller Direction", "Backwards");
-            	roller.set(-0.75);
-            }
-         	//When Button 3 on shootStick pressed, Stop Roller
-            if(shootStick.getRawButton(3)){
-            	roller.set(0);
-            	SmartDashboard.putString("Roller Direction", "Stopped");
-            }
-            //When Button 5 on shootStick pressed, Roll Roller Forwards
-            if(shootStick.getRawButton(5)){
-            	roller.set(0.75);
-            	SmartDashboard.putString("Roller Direction", "Forwards");
-            }
-            //When Button 2 on shootStick pressed, manually reset Gyro
-            if(driveStick.getRawButton(2)){
+            //Roller Button Functions
+            rollerButton(3, "Stopped", 0); //Stop Roller-----------------------ShootStick (3)
+            rollerButton(4, "Backwards", -0.75); //Roll Roller Backwards-------ShootStick (4)
+            rollerButton(5, "Forwards", 0.75); //Roll Roller Forwards----------ShootStick (5)
+     
+            if(driveStick.getRawButton(2)){ //Manually reset Gyro--------------DriveStick (2)
             	gyro.reset();
             }
             //While Limit switches tripped, change directions.
-            while(rollerUpSwitch.get() == false){
+            while(rollerUpSwitch.get() == true){
             	rollerTilt.set(-0.5);
             }
-            while(rollerDownSwitch.get() == false){
+            while(rollerDownSwitch.get() == true){
             	rollerTilt.set(0.5);
-            }
-            while(rollerBallSwitch.get() == false){
-            	roller.set(0);
             }
     }
 }
