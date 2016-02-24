@@ -2,13 +2,11 @@
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * 
- * Version 1.0.1
+ * Version 1.0.2
  * 
  * Changes: 
  * -Fixed bugs with code
- * -Removed unneeded components
- * -Reverted createTable function
- * -Removed PID function *At least temporarily*
+ * -Tweaks
 \***************************************************/
 
 //Defines stuff
@@ -43,7 +41,6 @@ public class Robot extends IterativeRobot {
 	//USB Objects and Variables
 	public static Joystick driveStick = new Joystick(0); //Joystick used for Driving------------------------------------------USB (0)
 	public static Joystick shootStick = new Joystick(1); //Joystick used for Shooting-----------------------------------------USB (1)
-	public static double shootY = shootStick.getAxis(Joystick.AxisType.kY); //The y values of ShootStick
 	
 	//SPI Objects and Variables
 	public static ADXL362 accel = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k16G); //Accelerometer----------------SPI (1)
@@ -171,7 +168,7 @@ public class Robot extends IterativeRobot {
         				}
     					move(156, 0.5); //move 156 inches
     				}	
-    			}else{
+    			}else if(rawDist < 0){
     				while(gyro.getAngle() < 90){
     					chassis.drive(0.5, 0.5);
     					move(dist, 0.75); //move calculated distance
@@ -180,6 +177,8 @@ public class Robot extends IterativeRobot {
         				}
     					move(156, 0.5); //move 156 inches
     				}
+    			}else{
+    				move(156, 0.5); //move 156 inches
     			}
     		}
     }
@@ -197,7 +196,7 @@ public class Robot extends IterativeRobot {
         	Timer.delay(0.005); //Slight delay required
         	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), rollerEncoder.get()); //Update SmartDashboard Values
             chassis.arcadeDrive(driveStick);//Drive chassis using Arcade Drive (One Joystick)
-            rollerTilt.set(shootY); //Set the roller's tilt to be equal to the Shooting Joystick's Y
+            rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY) * 0.5); //Set the roller's tilt to be equal to the Shooting Joystick's Y
             
             //Roller Button Functions
             rollerButton(3, "Stopped", 0); //Stop Roller-----------------------ShootStick (3)
