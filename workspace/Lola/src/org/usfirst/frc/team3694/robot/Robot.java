@@ -1,6 +1,6 @@
 /***************************************************\
  * Team 3694 NAHS Warbotz
- * FRC 2016 Robot Code
+ * FRC 2015 Robot Code
  * "Lola"
  * 
  * Version 0.8
