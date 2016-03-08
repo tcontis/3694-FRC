@@ -1,12 +1,16 @@
+
 /***************************************************\
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * "El Diablo"
  * 
- * Version 1.0.3
+ * Version 1.0.4
  * 
  * Changes: 
- * -Fixed bugs with code
+ * -Implemented straight driving using gyro
+ * -Fixed code robot could get stuck on
+ * -Fixed autonomous errors
+ * -Implemented ball switch
  * -Tweaks
 \***************************************************/
 
@@ -44,6 +48,7 @@ public class Robot extends IterativeRobot {
 	public static Joystick shootStick = new Joystick(1); //Joystick used for Shooting-----------------------------------------USB (1)
 	
 	//SPI Objects and Variables
+	public static final double Kp = 0.03; //proportional scaling constant
 	public static ADXL362 accel = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k16G); //Accelerometer----------------SPI (1)
 	public static ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); //Gyroscope-----------------------------------SPI (0)
 
@@ -53,6 +58,7 @@ public class Robot extends IterativeRobot {
 	public static Encoder rollerEncoder = new Encoder(5, 6, false, Encoder.EncodingType.k4X); //Roller Motor Encoder----------DIO (5,6)
 	public static DigitalInput rollerUpSwitch = new DigitalInput(7); //Roller Upper Limit Switch------------------------------DIO (7)
 	public static DigitalInput rollerDownSwitch = new DigitalInput(8); //Roller Lower Limit Switch----------------------------DIO (8)
+	public static DigitalInput rollerBallSwitch = new DigitalInput(9); //Roller Lower Limit Switch----------------------------DIO (9)
 	public static final double distPerRev = 4.05 * Math.PI; //Distance per revolution
 	public static final double distPerCount = distPerRev/249; //Distance per encoder count
 
@@ -121,9 +127,9 @@ public class Robot extends IterativeRobot {
     public void move(double dist, double speed){
     	double cntsNeeded = dist/distPerCount; //Counts needed for distance
     	double rnddCountsNeeded = Math.round(cntsNeeded); //Rounded Counts Needed
-    	resetEncoders(); //reset encoders
-    	chassis.drive(speed, 0.0); //Drive until encoder counts met
-    	if(leftEncoder.get() > rnddCountsNeeded && rightEncoder.get() > rnddCountsNeeded){
+    	//resetEncoders(); //reset encoders
+    	chassis.drive(speed, (-(gyro.getAngle())*Kp)); //Drive until encoder counts met
+    	if(leftEncoder.get() > rnddCountsNeeded || rightEncoder.get() > rnddCountsNeeded){
     		chassis.drive(0.0, 0.0);
     		resetEncoders(); //reset encoders
     	}
@@ -159,24 +165,28 @@ public class Robot extends IterativeRobot {
     			dist = Math.abs(rawDist * 45.5); //Encoder distance between points
     			move(6, 0.5); //move 6 Inches
     			
-    			//If distance is greater than 0, turn left until Gyro is at 90, else turn right until Gyro is 90
+    			//If distance is greater than 0, turn left until Gyro is at -90, else turn right until Gyro is 90
     			if(rawDist > 0){
     				while(gyro.getAngle() > -90){
-    					chassis.drive(0.5, 0.5);
+    					chassis.drive(0.5, -0.5);
+    					gyro.reset();
     				}
     				move(dist, 0.75); //move calculated distance
     				while(gyro.getAngle() < 90){ // turn right to be straight
         				chassis.drive(0.5, 0.5);
+        				gyro.reset();
         			}
     				move(156, 0.5); //move 156 inches
-    					
+    			//If distance is less than 0, turn right until Gyro is at 90, else turn left until Gyro is -90	
     			}else if(rawDist < 0){
     				while(gyro.getAngle() < 90){
-    					chassis.drive(0.5, 0.5);
+    					chassis.drive(0.5, -0.5);
+    					gyro.reset();
     				}
     				move(dist, 0.75); //move calculated distance
-    				while(gyro.getAngle() < 90){ // turn left to be straight
+    				while(gyro.getAngle() > -90){ // turn left to be straight
         				chassis.drive(0.5, 0.5);
+        				gyro.reset();
         			}
     				move(156, 0.5); //move 156 inches
     			}else{
@@ -212,8 +222,11 @@ public class Robot extends IterativeRobot {
             if(rollerUpSwitch.get() == true){
             	rollerTilt.set(-0.5);
             }
-           if(rollerDownSwitch.get() == true){
+            if(rollerDownSwitch.get() == true){
             	rollerTilt.set(0.5);
+            }
+            if(rollerBallSwitch.get() == true){
+            	rollerButton(4, "Cannot Go Backwards", 0);//Stop roller if switch tripped so ball not crushed.
             }
     }
 }
