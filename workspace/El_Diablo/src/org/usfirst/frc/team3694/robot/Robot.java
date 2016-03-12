@@ -3,11 +3,9 @@
  * FRC 2016 Robot Code
  * "El Diablo"
  * 
- * Version 1.0.5
+ * Version 1.0.6
  * 
  * Changes: 
- * -Implemented ball switch
- * -Implemented manipulator limit switches
  * -Fixed Autonomous
  * -Tweaks
 \***************************************************/
@@ -174,25 +172,29 @@ public class Robot extends IterativeRobot {
 				if(gyro.getAngle() > -90){
 					chassis.drive(0.5, -0.5);
 					gyro.reset();
-				}
+				}else{
 				move(dist, 0.75); //move calculated distance
-				if(gyro.getAngle() < 90){ // turn right to be straight
-    				chassis.drive(0.5, 0.5);
-    				gyro.reset();
-    			}
-				move(156, 0.5); //move 156 inches
+					if(gyro.getAngle() < 90){ // turn right to be straight
+						chassis.drive(0.5, 0.5);
+						gyro.reset();
+					}else{
+						move(156, 0.5); //move 156 inches
+					}
+				}
 			//If distance is less than 0, turn right until Gyro is at 90, else turn left until Gyro is -90	
 			}else if(rawDist < 0){
 				if(gyro.getAngle() < 90){
 					chassis.drive(0.5, -0.5);
 					gyro.reset();
+				}else{
+					move(dist, 0.75); //move calculated distance
+					if(gyro.getAngle() > -90){ // turn left to be straight
+						chassis.drive(0.5, 0.5);
+						gyro.reset();
+					}else{
+						move(156, 0.5); //move 156 inches
+					}
 				}
-				move(dist, 0.75); //move calculated distance
-				if(gyro.getAngle() > -90){ // turn left to be straight
-    				chassis.drive(0.5, 0.5);
-    				gyro.reset();
-    			}
-				move(156, 0.5); //move 156 inches
 			}else{
 				move(156, 0.5); //move 156 inches
 			}
