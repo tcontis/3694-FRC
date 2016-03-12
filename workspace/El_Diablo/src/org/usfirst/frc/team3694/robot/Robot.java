@@ -1,16 +1,14 @@
-
 /***************************************************\
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * "El Diablo"
  * 
- * Version 1.0.4
+ * Version 1.0.5
  * 
  * Changes: 
- * -Implemented straight driving using gyro
- * -Fixed code robot could get stuck on
- * -Fixed autonomous errors
  * -Implemented ball switch
+ * -Implemented manipulator limit switches
+ * -Fixed Autonomous
  * -Tweaks
 \***************************************************/
 
@@ -38,6 +36,7 @@ public class Robot extends IterativeRobot {
 	
 	//PWM Objects and Variables
 	public static RobotDrive chassis; //Robot Chassis
+	public static double motorPos; //Position of rollerTilt
 	public static Victor leftDrive = new Victor(0); //Left Drive Motors (Both Front and Rear)---------------------------------PWM (0)
 	public static Victor rightDrive = new Victor(1); //Right Drive Motors (Both Front and Rear)-------------------------------PWM (1)
 	public static Victor rollerTilt = new Victor(2); //Roller Tilt (Forwards and Backwards)-----------------------------------PWM (2)
@@ -58,7 +57,7 @@ public class Robot extends IterativeRobot {
 	public static Encoder rollerEncoder = new Encoder(5, 6, false, Encoder.EncodingType.k4X); //Roller Motor Encoder----------DIO (5,6)
 	public static DigitalInput rollerUpSwitch = new DigitalInput(7); //Roller Upper Limit Switch------------------------------DIO (7)
 	public static DigitalInput rollerDownSwitch = new DigitalInput(8); //Roller Lower Limit Switch----------------------------DIO (8)
-	public static DigitalInput rollerBallSwitch = new DigitalInput(9); //Roller Lower Limit Switch----------------------------DIO (9)
+	public static DigitalInput rollerBallSwitch = new DigitalInput(9); //Roller Ball Limit Switch-----------------------------DIO (9)
 	public static final double distPerRev = 4.05 * Math.PI; //Distance per revolution
 	public static final double distPerCount = distPerRev/249; //Distance per encoder count
 
@@ -152,51 +151,53 @@ public class Robot extends IterativeRobot {
     	cpoint = Integer.parseInt(chooser2.getSelected().toString());
     	point = Integer.parseInt(chooser.getSelected().toString());
     	status = Integer.parseInt(chooser3.getSelected().toString());
-    		//Camera Status
-    		if(status == 0){
-    			CameraServer.getInstance().startAutomaticCapture("cam0");
-    		}
-    			
-    		//Autonomous Move
-    		if(point == 0 || cpoint == 0){ //If points are nothing
-    			SmartDashboard.putString("Error", "You chose Nothing as one of the points"); //Display error
-    		}else{
-    			rawDist = point - cpoint; //Int distance between points
-    			dist = Math.abs(rawDist * 45.5); //Encoder distance between points
-    			move(6, 0.5); //move 6 Inches
-    			
-    			//If distance is greater than 0, turn left until Gyro is at -90, else turn right until Gyro is 90
-    			if(rawDist > 0){
-    				while(gyro.getAngle() > -90){
-    					chassis.drive(0.5, -0.5);
-    					gyro.reset();
-    				}
-    				move(dist, 0.75); //move calculated distance
-    				while(gyro.getAngle() < 90){ // turn right to be straight
-        				chassis.drive(0.5, 0.5);
-        				gyro.reset();
-        			}
-    				move(156, 0.5); //move 156 inches
-    			//If distance is less than 0, turn right until Gyro is at 90, else turn left until Gyro is -90	
-    			}else if(rawDist < 0){
-    				while(gyro.getAngle() < 90){
-    					chassis.drive(0.5, -0.5);
-    					gyro.reset();
-    				}
-    				move(dist, 0.75); //move calculated distance
-    				while(gyro.getAngle() > -90){ // turn left to be straight
-        				chassis.drive(0.5, 0.5);
-        				gyro.reset();
-        			}
-    				move(156, 0.5); //move 156 inches
-    			}else{
-    				move(156, 0.5); //move 156 inches
-    			}
-    		}
+    	//Camera Status
+    	if(status == 0){
+    		CameraServer.getInstance().startAutomaticCapture("cam0");
+    	}	
+    		
     }
 //AUTONOMOUS PERIODIC (CALLED EVERY FIELD CYCLE)  
     public void autonomousPeriodic(){
     	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), 0); //Update SmartDashboard Values
+    //Autonomous Move
+    if(isEnabled()){
+		if(point == 0 || cpoint == 0){ //If points are nothing
+			SmartDashboard.putString("Error", "You chose Nothing as one of the points"); //Display error
+		}else{
+			rawDist = point - cpoint; //Int distance between points
+			dist = Math.abs(rawDist * 45.5); //Encoder distance between points
+			move(6, 0.5); //move 6 Inches
+			
+			//If distance is greater than 0, turn left until Gyro is at -90, else turn right until Gyro is 90
+			if(rawDist > 0){
+				if(gyro.getAngle() > -90){
+					chassis.drive(0.5, -0.5);
+					gyro.reset();
+				}
+				move(dist, 0.75); //move calculated distance
+				if(gyro.getAngle() < 90){ // turn right to be straight
+    				chassis.drive(0.5, 0.5);
+    				gyro.reset();
+    			}
+				move(156, 0.5); //move 156 inches
+			//If distance is less than 0, turn right until Gyro is at 90, else turn left until Gyro is -90	
+			}else if(rawDist < 0){
+				if(gyro.getAngle() < 90){
+					chassis.drive(0.5, -0.5);
+					gyro.reset();
+				}
+				move(dist, 0.75); //move calculated distance
+				if(gyro.getAngle() > -90){ // turn left to be straight
+    				chassis.drive(0.5, 0.5);
+    				gyro.reset();
+    			}
+				move(156, 0.5); //move 156 inches
+			}else{
+				move(156, 0.5); //move 156 inches
+			}
+		}
+    }
     }
 //TELEOPERATED INITIATION (RUNS ONCE)
     public void teleopInit() {
@@ -207,7 +208,8 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic(){
         	Timer.delay(0.005); //Slight delay required
         	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), rollerEncoder.get()); //Update SmartDashboard Values
-            chassis.arcadeDrive(driveStick); //Drive chassis using Arcade Drive (One Joystick)
+            motorPos = rollerTilt.getPosition(); //Store position
+        	chassis.arcadeDrive(driveStick); //Drive chassis using Arcade Drive (One Joystick)
             rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY)); //Set the roller's tilt to be equal to the Shooting Joystick's Y
             
             //Roller Button Functions
@@ -218,15 +220,18 @@ public class Robot extends IterativeRobot {
             if(driveStick.getRawButton(2)){ //Manually reset Gyro--------------DriveStick (2)
             	gyro.reset();
             }
-            //While Limit switches tripped, change directions.
-            if(rollerUpSwitch.get() == true){
-            	rollerTilt.set(-0.5);
+            //While Limit switches tripped, do not allow other direction.
+            if(rollerUpSwitch.get() == true && shootStick.getAxis(Joystick.AxisType.kY) < 0){
+            	rollerTilt.set(0);
             }
-            if(rollerDownSwitch.get() == true){
-            	rollerTilt.set(0.5);
+            if(rollerDownSwitch.get() == true  && shootStick.getAxis(Joystick.AxisType.kY) > 0){
+            	rollerTilt.set(0);
             }
             if(rollerBallSwitch.get() == true){
             	rollerButton(4, "Cannot Go Backwards", 0);//Stop roller if switch tripped so ball not crushed.
+            }
+            if(shootStick.getAxis(Joystick.AxisType.kY) == 0){
+            	rollerTilt.setPosition(motorPos); //set rollerTilt to previous position
             }
     }
 }
