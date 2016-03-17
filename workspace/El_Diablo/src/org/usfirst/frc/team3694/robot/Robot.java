@@ -1,12 +1,14 @@
-/***************************************************\
+/*/***************************************************\
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * "El Diablo"
  * 
- * Version 1.0.6
+ * Version 1.0.7
  * 
  * Changes: 
- * -Fixed Autonomous
+ * -Test sequence
+ * -Move methods
+ * -Switches tweaked
  * -Tweaks
 \***************************************************/
 
@@ -21,6 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 
 //ROBOT CODE FROM THIS POINT ON
 public class Robot extends IterativeRobot {
+	//Test Sequence Objects and Variables
+	public static boolean isFinished = false;//If test sequence is finished or not
 	
 	//SmartDashboard Objects and Variables
 	public static SendableChooser chooser; //Destination Point
@@ -97,6 +101,7 @@ public class Robot extends IterativeRobot {
       	SmartDashboard.putString("Error","");
       	dashVarUpdate(0 ,0, 0, 0, 0, 0, 0);
       	SmartDashboard.putString("Roller Direction", "---");
+      	SmartDashboard.putString("Test Sequence", "---");
       	resetEncoders(); //reset encoders
       	
     	//Configure motors present in Chassis, configure safety
@@ -137,6 +142,61 @@ public class Robot extends IterativeRobot {
         	SmartDashboard.putString("Roller Direction", b);
         	roller.set(c);
         }
+    }
+//MOVE MANIPULATOR
+    public void moveArm(Joystick stick){
+    	motorPos = rollerTilt.getPosition(); // Store position
+		// If Limit switches tripped, do not allow other direction.
+		if (rollerUpSwitch.get() == true && shootStick.getAxis(Joystick.AxisType.kY) < 0) {
+			rollerTilt.set(0);
+		} else if (rollerDownSwitch.get() == true && shootStick.getAxis(Joystick.AxisType.kY) > 0) {
+			rollerTilt.set(0);
+		} else {
+			rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY));
+		}
+
+		if (shootStick.getAxis(Joystick.AxisType.kY) == 0) {
+			rollerTilt.setPosition(motorPos); // set rollerTilt to previous position	
+		}
+    }
+//SEQUENCE CREATOR
+    public void sequenceCreator(Victor v){
+    	Timer.delay(0.5);
+		v.set(0.25);
+		Timer.delay(0.25);
+		v.set(0.5);
+		Timer.delay(0.25);
+		v.set(0.75);
+		Timer.delay(0.25);
+		v.set(1.0);
+		Timer.delay(0.25);
+		
+		v.set(0.75);
+		Timer.delay(0.25);
+		v.set(0.5);
+		Timer.delay(0.25);
+		v.set(0.25);
+		Timer.delay(0.25);
+		v.set(0.0);
+		Timer.delay(0.25);
+		
+		v.set(-0.25);
+		Timer.delay(0.25);
+		v.set(-0.5);
+		Timer.delay(0.25);
+		v.set(-0.75);
+		Timer.delay(0.25);
+		v.set(-1.0);
+		Timer.delay(0.25);
+		
+		v.set(-0.75);
+		Timer.delay(0.25);
+		v.set(-0.5);
+		Timer.delay(0.25);
+		v.set(-0.25);
+		Timer.delay(0.25);
+		v.set(0.0);
+		Timer.delay(0.25);
     }
 //AUTONOMOUS INITIATION (RUNS ONCE)
     public void autonomousInit() {
@@ -212,28 +272,86 @@ public class Robot extends IterativeRobot {
         	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), rollerEncoder.get()); //Update SmartDashboard Values
             motorPos = rollerTilt.getPosition(); //Store position
         	chassis.arcadeDrive(driveStick); //Drive chassis using Arcade Drive (One Joystick)
-            rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY)); //Set the roller's tilt to be equal to the Shooting Joystick's Y
+            moveArm(shootStick); //Move manipulator arm
             
             //Roller Button Functions
             rollerButton(3, "Stopped", 0); //Stop Roller-----------------------ShootStick (3)
-            rollerButton(4, "Backwards", -0.75); //Roll Roller Backwards-------ShootStick (4)
+            if (rollerBallSwitch.get() == true) {
+    			rollerButton(4, "Cannot Go Backwards", 0);//Can't go Backwards
+    		} else {
+    			rollerButton(4, "Backwards", -0.75);//Roll Roller Backwards----ShootStick (4)
+    		} 
             rollerButton(5, "Forwards", 0.75); //Roll Roller Forwards----------ShootStick (5)
      
             if(driveStick.getRawButton(2)){ //Manually reset Gyro--------------DriveStick (2)
             	gyro.reset();
             }
-            //While Limit switches tripped, do not allow other direction.
-            if(rollerUpSwitch.get() == true && shootStick.getAxis(Joystick.AxisType.kY) < 0){
-            	rollerTilt.set(0);
-            }
-            if(rollerDownSwitch.get() == true  && shootStick.getAxis(Joystick.AxisType.kY) > 0){
-            	rollerTilt.set(0);
-            }
             if(rollerBallSwitch.get() == true){
             	rollerButton(4, "Cannot Go Backwards", 0);//Stop roller if switch tripped so ball not crushed.
             }
-            if(shootStick.getAxis(Joystick.AxisType.kY) == 0){
-            	rollerTilt.setPosition(motorPos); //set rollerTilt to previous position
-            }
     }
+//TEST SEQUENCE (RUNS ONCE, void CALLED EVERY FIELD CYCLE)
+    public void testPeriodic(){
+    	
+    	if(isFinished = true){
+    		SmartDashboard.putString("Test Sequence", "Error-Already Completed");
+    	}else{
+    		SmartDashboard.putString("Test Sequence", "Initializing.");
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "Initializing..");
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "Initializing...");
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "<!> Preparing to Start Test Sequence <!>");
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "<!> Please keep your distance. The test will start in 10 seconds. <!>");
+    		Timer.delay(10.0);
+    		SmartDashboard.putString("Test Sequence", "Now testing Left Drive");
+    		
+    		
+    		//Left Drive Sequence (0 to 1.0, then back to 0. Then 0 to -1.0, then back to 0.
+    		sequenceCreator(leftDrive);
+    		SmartDashboard.putString("Test Sequence", "Success! Now testing Right Drive");
+    		
+    		//Right Drive Sequence (0 to 1.0, then back to 0. Then 0 to -1.0, then back to 0.
+    		sequenceCreator(rightDrive);
+    		SmartDashboard.putString("Test Sequence", "Success! Now testing Roller");
+    		
+    		//Roller Drive Sequence (0 to 1.0, then back to 0. Then 0 to -1.0, then back to 0.
+    		sequenceCreator(roller);
+    		SmartDashboard.putString("Test Sequence", "Success! Now testing Manipulator Arm");
+    		
+    		//Press Roller Up Switch
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "Success! Now testing Roller Up Switch");
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "Please press the Roller Up Switch");
+    		while(rollerUpSwitch.get() == false){
+    			Timer.delay(0.5);
+    			SmartDashboard.putString("Test Sequence", "Please press the Roller Up Switch");
+    		}
+    		
+    		//Press Roller Down Switch
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "Success! Now testing Roller Down Switch");
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "Please press the Roller Down Switch");
+    		while(rollerDownSwitch.get() == false){
+    			Timer.delay(0.5);
+    			SmartDashboard.putString("Test Sequence", "Please press the Roller Down Switch");
+    		}
+    		
+    		//Press Roller Ball Switch
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "Success! Now testing Roller Ball Switch");
+    		Timer.delay(0.5);
+    		SmartDashboard.putString("Test Sequence", "Please press the Roller Ball Switch");
+    		while(rollerBallSwitch.get() == false){
+    			Timer.delay(0.5);
+    			SmartDashboard.putString("Test Sequence", "Please press the Roller Ball Switch");
+    		}
+    		SmartDashboard.putString("Test Sequence", "<!> You have successfuly completed the Test Sequence <!>");
+    		isFinished = true;
+    	}
+    } 
 }
