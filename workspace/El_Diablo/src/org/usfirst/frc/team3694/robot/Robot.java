@@ -3,11 +3,10 @@
  * FRC 2016 Robot Code
  * "El Diablo"
  * 
- * Version 1.0.8
+ * Version 1.0.9
  * 
  * Changes: 
- * -Test sequence fix
- * -Fixed minor issues
+ * -Fixed autonomous
  * -Tweaks
 \***************************************************/
 
@@ -24,11 +23,9 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 public class Robot extends IterativeRobot {
 	//SmartDashboard Objects and Variables
 	public static SendableChooser chooser; //Destination Point
-	public static SendableChooser chooser2; //Current Point
 	public static SendableChooser chooser3; //Camera
-	public static int point; //Destination Point Int
-	public static int cpoint; //Current Point Int
 	public static int status; //Camera Status
+	public static int autoChooser; //Emergency variable :P
 	public static int rawDist; //Int distance between points
 	public static double dist; //Encoder distance between points
 	
@@ -37,8 +34,9 @@ public class Robot extends IterativeRobot {
 	public static double motorPos; //Position of rollerTilt
 	public static Victor leftDrive = new Victor(0); //Left Drive Motors (Both Front and Rear)---------------------------------PWM (0)
 	public static Victor rightDrive = new Victor(1); //Right Drive Motors (Both Front and Rear)-------------------------------PWM (1)
-	public static Victor rollerTilt = new Victor(3); //Roller Tilt (Forwards and Backwards)-----------------------------------PWM (2)
-	public static Victor roller = new Victor(2); //Roller Motor (Forwards and Backwards)--------------------------------------PWM (3)
+	public static Victor roller = new Victor(2); //Roller Motor (Forwards and Backwards)--------------------------------------PWM (2)
+	public static Victor rollerTilt = new Victor(3); //Roller Tilt (Forwards and Backwards)-----------------------------------PWM (3)
+	
 	//USB Objects and Variables
 	public static Joystick driveStick = new Joystick(0); //Joystick used for Driving------------------------------------------USB (0)
 	public static Joystick shootStick = new Joystick(1); //Joystick used for Shooting-----------------------------------------USB (1)
@@ -60,27 +58,12 @@ public class Robot extends IterativeRobot {
 
 //ROBOT INIZILIZATION (RUNS ONCE)
 	public void robotInit() {
-    	//Table Creation for Destination Point
+		//Table Creation for Destination Point
 		chooser = new SendableChooser();
-		chooser.initTable(NetworkTable.getTable("Destination Point"));
+		chooser.initTable(NetworkTable.getTable("Autonomous"));
       	chooser.addDefault("Nothing", 0);
-      	chooser.addObject("Point A" , 1); 
-      	chooser.addObject("Point B" , 2);
-      	chooser.addObject("Point C" , 3);
-      	chooser.addObject("Point D" , 4);
-      	chooser.addObject("Point E" , 5);
+      	chooser.addObject("Onwards!" , 1); 
       	SmartDashboard.putData("Destination Point", chooser);
-    	
-      	//Table Creation for Current Point
-		chooser2 = new SendableChooser();
-		chooser2.initTable(NetworkTable.getTable("Current Point"));
-      	chooser2.addDefault("Nothing", 0);
-      	chooser2.addObject("Point A" , 1); 
-      	chooser2.addObject("Point B" , 2);
-      	chooser2.addObject("Point C" , 3);
-      	chooser2.addObject("Point D" , 4);
-      	chooser2.addObject("Point E" , 5);
-      	SmartDashboard.putData("Current Point", chooser2);
       	
         //Table selection for Camera Status
       	chooser3 = new SendableChooser();
@@ -90,8 +73,8 @@ public class Robot extends IterativeRobot {
       	SmartDashboard.putData("RoboRio Camera", chooser3);
       	
       	//Initialize SmartDashboard Fields
-      	SmartDashboard.putString("Current Point", chooser2.getSelected().toString());
-      	SmartDashboard.putString("Destination Point", chooser.getSelected().toString());
+      	//SmartDashboard.putString("Current Point", chooser2.getSelected().toString());
+      	//SmartDashboard.putString("Destination Point", chooser.getSelected().toString());
       	SmartDashboard.putString("Roborio Camera Status:", chooser3.getSelected().toString());
       	SmartDashboard.putString("Error","");
       	dashVarUpdate(0 ,0, 0, 0, 0, 0, 0);
@@ -201,9 +184,7 @@ public class Robot extends IterativeRobot {
     	resetEncoders(); //reset encoders
     	
     	//Get options we selected before autonomous
-    	cpoint = Integer.parseInt(chooser2.getSelected().toString());
-    	point = Integer.parseInt(chooser.getSelected().toString());
-    	status = Integer.parseInt(chooser3.getSelected().toString());
+    	autoChooser = Integer.parseInt(chooser.getSelected().toString());
     	//Camera Status
     	if(status == 0){
     		CameraServer.getInstance().startAutomaticCapture("cam0");
@@ -215,45 +196,11 @@ public class Robot extends IterativeRobot {
     	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), 0); //Update SmartDashboard Values
     //Autonomous Move
     if(isEnabled()){
-		if(point == 0 || cpoint == 0){ //If points are nothing
-			SmartDashboard.putString("Error", "You chose Nothing as one of the points"); //Display error
-		}else{
-			rawDist = point - cpoint; //Int distance between points
-			dist = Math.abs(rawDist * 45.5); //Encoder distance between points
-			move(6, 0.5); //-1+6 +move 6 Inches
-			
-			//If distance is greater than 0, turn left until Gyro is at -90, else turn right until Gyro is 90
-			if(rawDist > 0){
-				if(gyro.getAngle() > -90){
-					chassis.drive(0.5, -0.5);
-					gyro.reset();
-				}else{
-				move(dist, 0.75); //move calculated distance
-					if(gyro.getAngle() < 90){ // turn right to be straight
-						chassis.drive(0.5, 0.5);
-						gyro.reset();
-					}else{
-						move(156, 0.5); //move 156 inches
-					}
-				}
-			//If distance is less than 0, turn right until Gyro is at 90, else turn left until Gyro is -90	
-			}else if(rawDist < 0){
-				if(gyro.getAngle() < 90){
-					chassis.drive(0.5, -0.5);
-					gyro.reset();
-				}else{
-					move(dist, 0.75); //move calculated distance
-					if(gyro.getAngle() > -90){ // turn left to be straight
-						chassis.drive(0.5, 0.5);
-						gyro.reset();
-					}else{
-						move(156, 0.5); //move 156 inches
-					}
-				}
-			}else{
-				move(156, 0.5); //move 156 inches
-			}
-		}
+    	if(autoChooser == 0){
+    		SmartDashboard.putString("Error", "You chose Nothing as one of the points"); //Display error
+    	}else{
+    		move(20, -0.75);
+    	}
     }
     }
 //TELEOPERATED INITIATION (RUNS ONCE)
@@ -268,7 +215,9 @@ public class Robot extends IterativeRobot {
         	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), rollerEncoder.get()); //Update SmartDashboard Values
          	chassis.arcadeDrive(driveStick); //Drive chassis using Arcade Drive (One Joystick)
             moveArm(shootStick); //Move manipulator arm
-            
+            if(status == 0){
+        		CameraServer.getInstance().startAutomaticCapture("cam0");
+        	}
             //Roller Button Functions
             rollerButton(3, "Stopped", 0.0); //Stop Roller-----------------------ShootStick (3)
             if (rollerBallSwitch.get() == true) {
