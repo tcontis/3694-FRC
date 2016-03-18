@@ -1,14 +1,13 @@
-/*/***************************************************\
+/****************************************************\
  * Team 3694 NAHS Warbotz
  * FRC 2016 Robot Code
  * "El Diablo"
  * 
- * Version 1.0.7
+ * Version 1.0.8
  * 
  * Changes: 
- * -Test sequence
- * -Move methods
- * -Switches tweaked
+ * -Test sequence fix
+ * -Fixed minor issues
  * -Tweaks
 \***************************************************/
 
@@ -23,9 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 
 //ROBOT CODE FROM THIS POINT ON
 public class Robot extends IterativeRobot {
-	//Test Sequence Objects and Variables
-	public static boolean isFinished = false;//If test sequence is finished or not
-	
 	//SmartDashboard Objects and Variables
 	public static SendableChooser chooser; //Destination Point
 	public static SendableChooser chooser2; //Current Point
@@ -41,9 +37,8 @@ public class Robot extends IterativeRobot {
 	public static double motorPos; //Position of rollerTilt
 	public static Victor leftDrive = new Victor(0); //Left Drive Motors (Both Front and Rear)---------------------------------PWM (0)
 	public static Victor rightDrive = new Victor(1); //Right Drive Motors (Both Front and Rear)-------------------------------PWM (1)
-	public static Victor rollerTilt = new Victor(2); //Roller Tilt (Forwards and Backwards)-----------------------------------PWM (2)
-	public static Victor roller = new Victor(3); //Roller Motor (Forwards and Backwards)--------------------------------------PWM (3)
-	
+	public static Victor rollerTilt = new Victor(3); //Roller Tilt (Forwards and Backwards)-----------------------------------PWM (2)
+	public static Victor roller = new Victor(2); //Roller Motor (Forwards and Backwards)--------------------------------------PWM (3)
 	//USB Objects and Variables
 	public static Joystick driveStick = new Joystick(0); //Joystick used for Driving------------------------------------------USB (0)
 	public static Joystick shootStick = new Joystick(1); //Joystick used for Shooting-----------------------------------------USB (1)
@@ -225,7 +220,7 @@ public class Robot extends IterativeRobot {
 		}else{
 			rawDist = point - cpoint; //Int distance between points
 			dist = Math.abs(rawDist * 45.5); //Encoder distance between points
-			move(6, 0.5); //move 6 Inches
+			move(6, 0.5); //-1+6 +move 6 Inches
 			
 			//If distance is greater than 0, turn left until Gyro is at -90, else turn right until Gyro is 90
 			if(rawDist > 0){
@@ -265,19 +260,19 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
     	chassis.setSafetyEnabled(true); //Enable Safety
     	resetEncoders(); //reset encoders
+    	gyro.reset();
     }
 //TELEOPERATED PERIODIC (CALLED EVERY FIELD CYCLE)
     public void teleopPeriodic(){
         	Timer.delay(0.005); //Slight delay required
         	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), rollerEncoder.get()); //Update SmartDashboard Values
-            motorPos = rollerTilt.getPosition(); //Store position
-        	chassis.arcadeDrive(driveStick); //Drive chassis using Arcade Drive (One Joystick)
+         	chassis.arcadeDrive(driveStick); //Drive chassis using Arcade Drive (One Joystick)
             moveArm(shootStick); //Move manipulator arm
             
             //Roller Button Functions
-            rollerButton(3, "Stopped", 0); //Stop Roller-----------------------ShootStick (3)
+            rollerButton(3, "Stopped", 0.0); //Stop Roller-----------------------ShootStick (3)
             if (rollerBallSwitch.get() == true) {
-    			rollerButton(4, "Cannot Go Backwards", 0);//Can't go Backwards
+    			rollerButton(4, "Cannot Go Backwards", 0.0);//Can't go Backwards
     		} else {
     			rollerButton(4, "Backwards", -0.75);//Roll Roller Backwards----ShootStick (4)
     		} 
@@ -286,16 +281,10 @@ public class Robot extends IterativeRobot {
             if(driveStick.getRawButton(2)){ //Manually reset Gyro--------------DriveStick (2)
             	gyro.reset();
             }
-            if(rollerBallSwitch.get() == true){
-            	rollerButton(4, "Cannot Go Backwards", 0);//Stop roller if switch tripped so ball not crushed.
-            }
-    }
-//TEST SEQUENCE (RUNS ONCE, void CALLED EVERY FIELD CYCLE)
-    public void testPeriodic(){
-    	
-    	if(isFinished = true){
-    		SmartDashboard.putString("Test Sequence", "Error-Already Completed");
-    	}else{
+     }
+//TEST SEQUENCE (RUNS ONCE)
+    public void testInit(){
+    	if(isEnabled()){
     		SmartDashboard.putString("Test Sequence", "Initializing.");
     		Timer.delay(0.5);
     		SmartDashboard.putString("Test Sequence", "Initializing..");
@@ -351,7 +340,6 @@ public class Robot extends IterativeRobot {
     			SmartDashboard.putString("Test Sequence", "Please press the Roller Ball Switch");
     		}
     		SmartDashboard.putString("Test Sequence", "<!> You have successfuly completed the Test Sequence <!>");
-    		isFinished = true;
-    	}
+     	}
     } 
 }
