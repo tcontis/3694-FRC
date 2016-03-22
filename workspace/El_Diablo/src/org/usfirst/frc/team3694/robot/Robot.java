@@ -3,7 +3,7 @@
  * FRC 2016 Robot Code
  * "El Diablo"
  * 
- * Version 1.0.9
+ * Version 1.1.0
  * 
  * Changes: 
  * -Fixed autonomous
@@ -58,6 +58,9 @@ public class Robot extends IterativeRobot {
 
 //ROBOT INIZILIZATION (RUNS ONCE)
 	public void robotInit() {
+		if(status == 0){
+    		CameraServer.getInstance().startAutomaticCapture("cam0");
+    	}	
 		//Table Creation for Destination Point
 		chooser = new SendableChooser();
 		chooser.initTable(NetworkTable.getTable("Autonomous"));
@@ -105,13 +108,28 @@ public class Robot extends IterativeRobot {
 	}
 //ENCODER MOVE COUNTS
     public void move(double dist, double speed){
-    	double cntsNeeded = dist/distPerCount; //Counts needed for distance
-    	double rnddCountsNeeded = Math.round(cntsNeeded); //Rounded Counts Needed
+    	//double cntsNeeded = dist*distPerCount; //Counts needed for distance
+    	//double rnddCountsNeeded = dist; //Rounded Counts Needed
     	//resetEncoders(); //reset encoders
-    	chassis.drive(speed, (-(gyro.getAngle())*Kp)); //Drive until encoder counts met
-    	if(leftEncoder.get() > rnddCountsNeeded || rightEncoder.get() > rnddCountsNeeded){
+    	if(leftEncoder.get() > dist || rightEncoder.get() > dist){
     		chassis.drive(0.0, 0.0);
-    		resetEncoders(); //reset encoders
+    		//resetEncoders(); //reset encoders
+    	}else{
+    		leftDrive.set(-0.5);
+    		rightDrive.set(-0.5);
+    		if(leftEncoder.get() > rightEncoder.get()){
+    			rightDrive.set(rightDrive.get() + 0.1);
+    		}
+    		if(rightEncoder.get() > leftEncoder.get()){
+    			leftDrive.set(leftDrive.get() + 0.1);
+    		}
+    		if(leftEncoder.get() < rightEncoder.get()){
+    			rightDrive.set(rightDrive.get() - 0.1);
+    		}
+    		if(rightEncoder.get() < leftEncoder.get()){
+    			leftDrive.set(leftDrive.get() - 0.1);
+    		}
+    		chassis.drive(speed, (-(gyro.getAngle())*Kp)); //Drive until encoder counts met
     	}
     }
 //CREATE ROLLER BUTTON
@@ -186,42 +204,39 @@ public class Robot extends IterativeRobot {
     	//Get options we selected before autonomous
     	autoChooser = Integer.parseInt(chooser.getSelected().toString());
     	//Camera Status
-    	if(status == 0){
-    		CameraServer.getInstance().startAutomaticCapture("cam0");
-    	}	
-    		
+  
+    	 if(isEnabled()){
+    	    	if(autoChooser == 0){
+    	    		SmartDashboard.putString("Error", "You chose Nothing as one of the points"); //Display error
+    	    	}else{
+    	    		move(10, -0.6);
+    	    	}
+    	    }
     }
 //AUTONOMOUS PERIODIC (CALLED EVERY FIELD CYCLE)  
     public void autonomousPeriodic(){
     	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), 0); //Update SmartDashboard Values
     //Autonomous Move
-    if(isEnabled()){
-    	if(autoChooser == 0){
-    		SmartDashboard.putString("Error", "You chose Nothing as one of the points"); //Display error
-    	}else{
-    		move(20, -0.75);
-    	}
-    }
+   
     }
 //TELEOPERATED INITIATION (RUNS ONCE)
     public void teleopInit() {
-    	chassis.setSafetyEnabled(true); //Enable Safety
+    	chassis.setSafetyEnabled(false); //Enable Safety
     	resetEncoders(); //reset encoders
     	gyro.reset();
     }
 //TELEOPERATED PERIODIC (CALLED EVERY FIELD CYCLE)
     public void teleopPeriodic(){
-        	Timer.delay(0.005); //Slight delay required
+    		Timer.delay(0.001); //Slight delay required
         	dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate(), accel.getX(), accel.getY(), accel.getZ(), rollerEncoder.get()); //Update SmartDashboard Values
          	chassis.arcadeDrive(driveStick); //Drive chassis using Arcade Drive (One Joystick)
             moveArm(shootStick); //Move manipulator arm
-            if(status == 0){
-        		CameraServer.getInstance().startAutomaticCapture("cam0");
-        	}
+            
             //Roller Button Functions
             rollerButton(3, "Stopped", 0.0); //Stop Roller-----------------------ShootStick (3)
             if (rollerBallSwitch.get() == true) {
     			rollerButton(4, "Cannot Go Backwards", 0.0);//Can't go Backwards
+    			roller.set(0.0);
     		} else {
     			rollerButton(4, "Backwards", -0.75);//Roll Roller Backwards----ShootStick (4)
     		} 
