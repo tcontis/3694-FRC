@@ -6,10 +6,6 @@
  * Version 1.1.1
  * 
  * Changes: 
- * -Fixed autonomous
- * -Added new Autonomous methods
- * -Removed unused code
- * -Added toggle on joystick
  * -Tweaks
 \***************************************************/
 
@@ -41,8 +37,8 @@ public class Robot extends IterativeRobot{
 	//USB Objects and Variables
 	public static Joystick driveStick = new Joystick(0); //Joystick used for Driving------------------------------------------USB (0)
 	public static Joystick shootStick = new Joystick(1); //Joystick used for Shooting-----------------------------------------USB (1)
-	public static boolean if4 = false;
-	public static boolean if5 = false;
+	public static boolean if4 = false; //Variable used to toggle shootStick button 4
+	public static boolean if5 = false; //Variable used to toggle shootStick button 5
 	
 	//SPI Objects and Variables
 	public static final double Kp = 0.03; //proportional scaling constant
@@ -95,7 +91,7 @@ public class Robot extends IterativeRobot{
     }
 //MOVE MANIPULATOR
     public void moveArm(Joystick stick){
-    	motorPos = rollerTilt.getPosition(); // Store position
+    	// Store position
 		// If Limit switches tripped, do not allow other direction.
 		if (rollerUpSwitch.get() == true && shootStick.getAxis(Joystick.AxisType.kY) < 0) {
 			rollerTilt.set(0);
@@ -105,8 +101,19 @@ public class Robot extends IterativeRobot{
 			rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY));
 		}
 		if (shootStick.getAxis(Joystick.AxisType.kY) == 0) {
-			rollerTilt.setPosition(motorPos); // set rollerTilt to previous position	
+			rollerTilt.setPosition(rollerTilt.getPosition()); // set rollerTilt to previous position	
 		}
+		if(shootStick.getAxis(Joystick.AxisType.kY) <= 0.15 && shootStick.getAxis(Joystick.AxisType.kY) >= -0.15){
+	    	if(shootStick.getAxis(Joystick.AxisType.kY) < 0 && rollerUpSwitch.get() == false){
+	    		rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY) * 1.15);
+	    	}else if(shootStick.getAxis(Joystick.AxisType.kY) > 0 && rollerUpSwitch.get() == false){
+	    		rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY) * 1.15);
+	    	}else if(shootStick.getAxis(Joystick.AxisType.kY) == 0 && rollerUpSwitch.get() == false && rollerUpSwitch.get() == false){
+	    		rollerTilt.set(rollerTilt.getPosition() * 1.15);
+	    	}else if(rollerUpSwitch.get() == true || rollerUpSwitch.get() == true){
+	    		rollerTilt.set(0);
+	    	}
+	    }
     }
 //MOVE OVER DEFENSE AND SHOOT AUTO
 	public void fullAuto(double move1, double move2, double angle){
@@ -177,12 +184,13 @@ public class Robot extends IterativeRobot{
 		chooser = new SendableChooser();
 		chooser.initTable(NetworkTable.getTable("Autonomous"));
       	chooser.addDefault("Nothing", 0);
-      	chooser.addObject("Forward" , 1); 
-      	chooser.addObject("Full Auto [0] [] [] [] []" , 2);
-      	chooser.addObject("Full Auto [] [0] [] [] []" , 3);
-      	chooser.addObject("Full Auto [] [] [0] [] []" , 4);
-      	chooser.addObject("Full Auto [] [] [] [0] []" , 5);
-    	chooser.addObject("Full Auto [] [] [] [] [0]" , 6);
+      	chooser.addObject("Forward 50%" , 1);
+      	chooser.addObject("Forward 75%", 2);
+      	chooser.addObject("Full Auto [0] [] [] [] []" , 3);
+      	chooser.addObject("Full Auto [] [0] [] [] []" , 4);
+      	chooser.addObject("Full Auto [] [] [0] [] []" , 5);
+      	chooser.addObject("Full Auto [] [] [] [0] []" , 6);
+    	chooser.addObject("Full Auto [] [] [] [] [0]" , 7);
       	SmartDashboard.putData("Destination Point", chooser);
       	
       	//Table selection for Camera Status 
@@ -208,7 +216,7 @@ public class Robot extends IterativeRobot{
     }
 //AUTONOMOUS INITIATION (RUNS ONCE)
     public void autonomousInit() {
-    	Timer.delay(0.005); //Slight delay required
+    	Timer.delay(0.005); //Slight delay required 
     	chassis.setSafetyEnabled(false);
     	gyro.reset(); //Reset Gyro
     	resetEncoders(); //reset encoders
@@ -220,21 +228,24 @@ public class Robot extends IterativeRobot{
    		 		case 0: SmartDashboard.putString("Console", "The robot will do nothing."); 
    		 				break;  
    		 		case 1: SmartDashboard.putString("Console", "The robot will move onwards."); 
-   		    			move(259, -0.6); 
+   		    			move(259, -0.5); 
    		    			break;
-   		 		case 2: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
+   		 		case 2: SmartDashboard.putString("Console", "The robot will move onwards."); 
+	    				move(259, -0.75); 
+	    				break;
+   		 		case 3: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
    		 				fullAuto(290, 124, 30); // add robot length to 259 
    		 				break;
-   		 		case 3: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
+   		 		case 4: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
    		 				fullAuto(312, 68, 30); // add robot length to 281
    		 				break;
-	   		 	case 4: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
+	   		 	case 5: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
 	   		 			fullAuto(0, 0, 30);
 	   		 			break;
-		   		case 5: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
+		   		case 6: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
 		   		 		fullAuto(0, 0, -30);
 	   		 			break;
-		   		case 6: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
+		   		case 7: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
 		   				fullAuto(0, 0, -30);
 	   		 			break;
    		 	}
@@ -256,7 +267,7 @@ public class Robot extends IterativeRobot{
 	    dashVarUpdate(gyro.getAngle(), gyro.getAngle(), gyro.getRate()); //Update SmartDashboard Values
 	    chassis.arcadeDrive(driveStick); //Drive chassis using Arcade Drive (One Joystick)
 	    moveArm(shootStick); //Move manipulator arm
-	    
+	    //Make sure manipulator doesn't slam
 	    //Roller Button Functions 
         if(shootStick.getRawButton(3)){ 
 	        if4 = false; 
