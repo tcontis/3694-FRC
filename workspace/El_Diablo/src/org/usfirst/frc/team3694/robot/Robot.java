@@ -3,9 +3,10 @@
  * FRC 2016 Robot Code
  * "El Diablo"
  * 
- * Version 1.1.1
+ * Version 1.1.2
  * 
  * Changes: 
+ * -Fixed joystick toggle
  * -Tweaks
 \***************************************************/
 
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.interfaces.*;
 import edu.wpi.first.wpilibj.networktables.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj.buttons.*;
 
 //ROBOT CODE FROM THIS POINT ON
 public class Robot extends IterativeRobot{
@@ -37,6 +39,8 @@ public class Robot extends IterativeRobot{
 	//USB Objects and Variables
 	public static Joystick driveStick = new Joystick(0); //Joystick used for Driving------------------------------------------USB (0)
 	public static Joystick shootStick = new Joystick(1); //Joystick used for Shooting-----------------------------------------USB (1)
+	public static Button button4 = new JoystickButton(shootStick , 4); //shootStick button 4----------------------------------JOY (4)
+	public static Button button5 = new JoystickButton(shootStick , 5); //shootStick button 5----------------------------------JOY (5)
 	public static boolean if4 = false; //Variable used to toggle shootStick button 4
 	public static boolean if5 = false; //Variable used to toggle shootStick button 5
 	
@@ -100,10 +104,10 @@ public class Robot extends IterativeRobot{
 		} else {
 			rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY));
 		}
-		if (shootStick.getAxis(Joystick.AxisType.kY) == 0) {
+		if (shootStick.getTrigger()) {
 			rollerTilt.setPosition(rollerTilt.getPosition()); // set rollerTilt to previous position	
 		}
-		if(shootStick.getAxis(Joystick.AxisType.kY) <= 0.15 && shootStick.getAxis(Joystick.AxisType.kY) >= -0.15){
+		/*if(shootStick.getAxis(Joystick.AxisType.kY) <= 0.15 && shootStick.getAxis(Joystick.AxisType.kY) >= -0.15){
 	    	if(shootStick.getAxis(Joystick.AxisType.kY) < 0 && rollerUpSwitch.get() == false){
 	    		rollerTilt.set(shootStick.getAxis(Joystick.AxisType.kY) * 1.15);
 	    	}else if(shootStick.getAxis(Joystick.AxisType.kY) > 0 && rollerUpSwitch.get() == false){
@@ -113,7 +117,7 @@ public class Robot extends IterativeRobot{
 	    	}else if(rollerUpSwitch.get() == true || rollerUpSwitch.get() == true){
 	    		rollerTilt.set(0);
 	    	}
-	    }
+	    }*/
     }
 //MOVE OVER DEFENSE AND SHOOT AUTO
 	public void fullAuto(double move1, double move2, double angle){
@@ -210,6 +214,8 @@ public class Robot extends IterativeRobot{
       	
     	//Configure motors present in Chassis, configure safety
     	chassis = new RobotDrive(leftDrive, rightDrive);
+    	leftDrive.setInverted(true);
+    	rightDrive.setInverted(true);
     	gyro.calibrate();
     	chassis.setExpiration(0.1);
       	resetEncoders(); //reset encoders
@@ -227,11 +233,11 @@ public class Robot extends IterativeRobot{
    		 	switch(autoChooser){ 
    		 		case 0: SmartDashboard.putString("Console", "The robot will do nothing."); 
    		 				break;  
-   		 		case 1: SmartDashboard.putString("Console", "The robot will move onwards."); 
-   		    			move(259, -0.5); 
+   		 		case 1: SmartDashboard.putString("Console", "The robot will move onwards at 50% power."); 
+   		    			move(12, -0.5); 
    		    			break;
-   		 		case 2: SmartDashboard.putString("Console", "The robot will move onwards."); 
-	    				move(259, -0.75); 
+   		 		case 2: SmartDashboard.putString("Console", "The robot will move onwards at 75% power."); 
+	    				move(12, -0.75); 
 	    				break;
    		 		case 3: SmartDashboard.putString("Console", "The robot will move onwards and shoot at the low goal.");
    		 				fullAuto(290, 124, 30); // add robot length to 259 
@@ -276,38 +282,38 @@ public class Robot extends IterativeRobot{
 	        roller.set(0.0); 
         } //Stop Roller-----------------------ShootStick (3) 
         if (rollerBallSwitch.get() == true) { 
-        	if(shootStick.getRawButton(4)){ 
+        	if(button4.get()){ 
         		if5 = false; 
         		SmartDashboard.putString("Roller Direction", "Cannot go Backwards!"); 
         		roller.set(0.0); 
             }//Can't go Backwards 
         	roller.set(0.0); 
-		} else { 
-			if(shootStick.getRawButton(4)){ 
-				if5 = false; 
-				if(if4 == false){ 
-		            SmartDashboard.putString("Roller Direction", "Backwards"); 
-		            roller.set(-0.75); 
-		            if4 = true; 
-				}else{ 
-					SmartDashboard.putString("Roller Direction", "Stopped"); 
-					roller.set(0.0); 
-					if4 = false; 
-				} 
+		}else { 
+			if(button4.get() && if4 == false){ 
+				if4 = true;
+				if5 = false;  
+		        SmartDashboard.putString("Roller Direction", "Backwards"); 
+		        roller.set(-0.75); 
+		        
+			}else if(button4.get() && if4 == true){ 
+				if4 = false; 	
+				if5 = false;
+				SmartDashboard.putString("Roller Direction", "Stopped"); 
+				roller.set(0.0); 	
 		    }//Roll Roller Backwards----ShootStick (4) 
 		} 
-        if(shootStick.getRawButton(5)){ 
-        	if4 = false; 
-        	if(if5 == false){ 
-        		SmartDashboard.putString("Roller Direction", "Forwards"); 
-        		roller.set(0.75); 
-        		if5 = true; 
-        	}else{ 
-        		SmartDashboard.putString("Roller Direction", "Stopped"); 
-        		roller.set(0.0); 
-        		if5 = false; 
-        	} 
-        } //Roll Roller Forwards----------ShootStick (5) 
+        if(button5.get() && if5 == false){ 
+        	if4 = false;
+        	if5 = true;
+        	SmartDashboard.putString("Roller Direction", "Forwards"); 
+        	roller.set(0.75); 
+        	
+        }else if(button5.get() && if5 == true){
+        	if4 = false;
+        	if5 = false; 
+        	SmartDashboard.putString("Roller Direction", "Stopped"); 
+        	roller.set(0.0); 
+        }  //Roll Roller Forwards----------ShootStick (5) 
          
 	    //Manual Gyro Reset
 	    if(driveStick.getRawButton(2)){ //Manually reset Gyro-------------------DriveStick (2)
