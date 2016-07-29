@@ -1,7 +1,0 @@
-package com.samurai;
-
-import org.bukkit.plugin.java.JavaPlugin;
-
-public class pepper extends JavaPlugin{
-
-	

@@ -1,7 +1,0 @@
-package com.Test;
-
-import org.bukkit.plugin.java.JavaPlugin;
-
-public class Test extends JavaPlugin{
-
-}
