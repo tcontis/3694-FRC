@@ -1,4 +1,6 @@
-# NAHS_FRC
-Welcome to Team 3694 (North Atlanta High School)'s First Robotics Competition (FRC) Repository! 
+# NAHS FRC
+Welcome to Team 3694 (North Atlanta High School)'s First Robotics Competition (FRC) Repository!
 
-In the workspace subfolders is all the source code for our frc robots, as well as some robots we built for fun, such as the T-Shirt Cannon
+Here you will find all of our robot code, our website code, and any other programming related resources that we use!
+
+Be sure to visit our website at www.warbotz.org
