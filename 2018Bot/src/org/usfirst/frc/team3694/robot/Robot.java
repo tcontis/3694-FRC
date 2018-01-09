@@ -7,10 +7,13 @@
 
 package org.usfirst.frc.team3694.robot;
 
+import Commands.TankDrive;
+import Commands.lineDrive;
 import Subsystems.DriveTrain;
 import Subsystems.Sensors;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -59,15 +62,16 @@ public class Robot extends IterativeRobot {
 		switch (m_autoSelected) {
 			case crossLine:
 				default:
-				// Put default auto code here
-				break;
+					lineDrive.LineDrive();	
+					Timer.delay(3.00);
+					break;
 			case switchLeft:
 				if(gameData.charAt(0) == 'L')
 				{
-					//Put left auto code here
+					Commands.switchLeft.SwitchLeftLeft();
 				} 
 				else {
-					//Put right auto code here
+					Commands.switchLeft.SwitchLeftRight();
 				}
 				break;
 			case switchMiddle:
@@ -95,7 +99,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		while (isOperatorControl() && isEnabled()) {
-			
+			TankDrive.tankDrive();
 		}
 	}
 
