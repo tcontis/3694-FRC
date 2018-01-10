@@ -1,0 +1,60 @@
+Team #qwnklonrfqko
+Round #1234
+The date is: 4/7/2016 11:34:31 PM
+High Goal = True
+Low Goal = True
+Porticullis = True
+Cheval De Fris = True
+Ramparts = True
+Moat = True
+Rock Wall = True
+Drawbridge = True
+Sallyport = True
+Rough Terrain = True
+Survived Round = True
+Has Bumpers = True
+Climb Tower = True
+End near Tower = True
+Dingus = True
+Notes: 
+----------
+Team #awdwad
+Round #
+The date is: 4/7/2016 11:35:54 PM
+High Goal = False
+Low Goal = False
+Porticullis = False
+Cheval De Fris = False
+Ramparts = False
+Moat = False
+Rock Wall = True
+Drawbridge = False
+Sallyport = False
+Rough Terrain = True
+Survived Round = False
+Has Bumpers = False
+Climb Tower = False
+End near Tower = False
+Dingus = False
+Notes: awtw4
+----------
+Team #32532
+Round #
+The date is: 4/10/2016 12:20:10 AM
+High Goal = False
+Low Goal = False
+Porticullis = False
+Cheval De Fris = False
+Ramparts = False
+Moat = False
+Rock Wall = False
+Drawbridge = False
+Sallyport = True
+Rough Terrain = True
+Survived Round = False
+Has Bumpers = False
+Climb Tower = False
+End near Tower = False
+Dingus = False
+Notes: 
+----------
