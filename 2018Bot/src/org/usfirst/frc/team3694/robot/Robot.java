@@ -5,11 +5,16 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+/*Version 4.0
+ * Changes: 2 motor drive, 3 motor manipulator drive, timings for automatic manipulator lift
+ */
+
 package org.usfirst.frc.team3694.robot;
 
 import Commands.TankDrive;
 import Commands.lineDrive;
 import Subsystems.DriveTrain;
+import Commands.manDrive;
 import Subsystems.Sensors;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -100,6 +105,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		while (isOperatorControl() && isEnabled()) {
 			TankDrive.tankDrive();
+			manDrive.Manipulator();
 		}
 	}
 
