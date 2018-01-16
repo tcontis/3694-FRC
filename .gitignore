@@ -99,3 +99,4 @@
 +# Builds
 +*.apk
 +*.unitypackage
+/.metadata/
