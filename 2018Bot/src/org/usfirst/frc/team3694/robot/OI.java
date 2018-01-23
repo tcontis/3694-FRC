@@ -14,8 +14,4 @@ public class OI {
 	public static Joystick leftStick = new Joystick(0);
   	public static Joystick rightStick = new Joystick(1);
   	public static Joystick driveStick = new Joystick(2);
- 	public static JoystickButton forwardSpin = new JoystickButton(rightStick, 2);
- 	public static JoystickButton reverseSpin = new JoystickButton(rightStick, 3);
- 	public static JoystickButton manipulatorClimb = new JoystickButton(rightStick, 1);
- 	public static JoystickButton manipulatorScale = new JoystickButton(rightStick, 4);
 }

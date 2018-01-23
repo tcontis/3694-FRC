@@ -58,7 +58,7 @@ public class Robot extends IterativeRobot {
 		switch (m_autoSelected) {
 			case crossLine:
 				default:
-					lineDrive.LineDrive();	
+					lineDrive.drive();	
 					Timer.delay(3.00);
 					break;
 			case switchLeft:

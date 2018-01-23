@@ -7,14 +7,12 @@ import org.usfirst.frc.team3694.robot.OI;
 
 public class manDrive {
 	public static void Manipulator () {
-		Manipulator.base.set(OI.rightStick.getY()); 
-		if (OI.manipulatorClimb.get() == true) {
-			Manipulator.base.set(0.5); //speed temporary
-				Timer.delay(2); //time temporary -- needs testing
-		}
-		if (OI.manipulatorScale.get() == true) {
-			Manipulator.base.set(0.5); //speed temporary
-			Timer.delay(2); //time temporary -- needs testing
+		Manipulator.climb.set(OI.leftStick.getY());
+		Manipulator.topLeft.set(OI.rightStick.getY());
+		Manipulator.topRight.set(OI.rightStick.getY());
+		while (OI.rightStick.getY() >= .75) {
+			Manipulator.topLeft.set(.75);
+			Manipulator.topRight.set(.75);
 		}
 	}
 }
