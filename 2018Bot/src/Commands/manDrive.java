@@ -14,5 +14,9 @@ public class manDrive {
 			Manipulator.topLeft.set(.75);
 			Manipulator.topRight.set(.75);
 		}
+		while (OI.rightStick.getY() <= -.75) {
+			Manipulator.topLeft.set(-.75);
+			Manipulator.topRight.set(-.75);
+		}
 	}
 }
